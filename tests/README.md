@@ -32,6 +32,7 @@ cd portal
 - **One class only:** add `-Dtest=OfferRulesTest`.
 - **Our classes:**
   - `service/OfferRulesTest`: TC-OFF-012 to TC-OFF-019 (OFF-01..04, NOT-04, ADM-01)
+  - `service/OfferAgreementTest`: TC-OFF-021 to TC-OFF-028 (OFF-07, REL-01, NOT-01, NOT-02)
 
 ## Engine API tests (black-box)
 
@@ -55,3 +56,4 @@ Failing tests are expected: each failure is a defect in the system, linked from 
 | 22/11/2026 | Portal vendor suite (baseline, before our tests) | 147 | 147 | 0 | Line coverage: `service` 72.4% (branches 52.8%), `OfferService` 57% (branches 37%) |
 | 22/11/2026 | Portal `OfferRulesTest` | 8 | 0 | 8 | All 8 fail on OFF-02, OFF-03, OFF-01/APP-06, OFF-04, NOT-04 and ADM-01 defects |
 | 22/11/2026 | Engine `AllowanceApiTest` | 30 | 20 | 10 | Failures: transport at 30 h, monthly cap never applied, month starting on the 31st, 500 for missing or wrongly typed fields |
+| 23/11/2026 | Portal `OfferAgreementTest` | 11 | 11 | 0 | Agreement date, late days, refusals, Engine down while recalculating, offer notifications: all as required |

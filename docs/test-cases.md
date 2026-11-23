@@ -33,19 +33,31 @@ A spreadsheet `docs/test-cases.xlsx` may replace this file. At least 10 test cas
 | TC-OFF-017 | OFF-04 | Offers & Allowance | Integration | Concurrency test (non-functional, reliability) | Posting with 1 seat; 2 students with pending offers | Both accept at the same moment (2 threads) | | both acceptances succeed in 10 of 10 rounds (no lock or version on `Posting`) | Fail | `OfferRulesTest.concurrentAcceptsOfLastSeat` | #6 |
 | TC-OFF-018 | NOT-04 | Offers & Allowance | Integration | Code review + state-based test | Pending offer inside the last 24 h of its window | Run the reminder job twice | | 2 reminders after 2 runs: `sendReminders()` never sets `reminderSent` | Fail | `OfferRulesTest.reminderIsRecordedOnce` | #17 |
 | TC-OFF-019 | ADM-01, MAINT-02, OFF-05 | Offers & Allowance | Integration | Data-flow review of `EngineRequestMapper.toAllowanceRequest` | Coordinator sets monthly cap = 4,000 | Student accepts an offer | | `monthlyCap` is null: `EngineRequestMapper.toAllowanceRequest` never sets it, so the Engine falls back to 5,000 | Fail | `OfferRulesTest.monthlyCapSettingIsSentToEngine` | #15 |
-| TC-OFF-020 | OFF-06, USA-04 | Offers & Allowance | System | Exploratory (charter: statement display) | Accepted offer | Open the application as the student, then as the coordinator | | statement visible to both; amounts as QAR with 2 decimals and thousands separators | statement visible to the student; amounts shown as "QAR 9000.00" with no thousands separator (the offer above shows "QAR 3,000.00") | Fail | manual | #18 |
+| TC-OFF-020 | OFF-06, USA-04 | Offers & Allowance | System | Exploratory (charter: statement display) | Accepted offer | Open the application as the student, then as the coordinator | | statement visible to both; amounts as QAR with 2 decimals and thousands separators | statement visible to the student and the coordinator; amounts shown as "QAR 9000.00" with no thousands separator (the offer above shows "QAR 3,000.00") | Fail | manual | #18 |
+| TC-OFF-021 | OFF-07 | Offers & Allowance | Integration | Boundary value analysis (agreement on the start date, 1 day after, 8 days after) | Accepted placement whose internship started 10 days ago | Coordinator records the agreement date | received 0 / 1 / 8 days after the start | Engine called with 0 / 1 / 8 late days; date and recalculated statement stored | as expected | Pass | `OfferAgreementTest.agreementDateSetsLateDays` | |
+| TC-OFF-022 | OFF-07 | Offers & Allowance | Integration | Equivalence partitioning (invalid classes) | Accepted placement; a pending (not accepted) offer | Record an agreement date tomorrow; record one for the pending offer | tomorrow; today | both refused; no date stored | as expected | Pass | `OfferAgreementTest.agreementDateInTheFutureIsRefused`, `agreementOnlyForAcceptedPlacement` | |
+| TC-OFF-023 | OFF-07 | Offers & Allowance | Integration | Statement coverage of `OfferService.recalculate` | Accepted placement, no agreement date | Coordinator presses Recalculate | | Engine called with 0 late days (no penalty) | as expected | Pass | `OfferAgreementTest.noPenaltyBeforeAnAgreementDate` | |
+| TC-OFF-024 | REL-01, OFF-07 | Offers & Allowance | Integration + System | Error guessing / fault injection (Engine down) | Accepted placement; Engine stopped | Coordinator records the agreement date | today | refused with a clear message; no date stored | "The matching service is not available at the moment. Nothing was changed; please try again later."; no date stored (also checked on the running system, 23/11/2026) | Pass | `OfferAgreementTest.engineDownWhileRecordingAgreement` | |
+| TC-OFF-025 | NOT-01, NOT-02 | Offers & Allowance | Integration | State-based test | Application in INTERVIEW | Recruiter issues an offer | | 1 notification to the student naming the posting and the company | as expected | Pass | `OfferAgreementTest.issuingNotifiesTheStudent` | |
+| TC-OFF-026 | NOT-01, NOT-02 | Offers & Allowance | Integration | State-based test | Pending offer | Student accepts | | 1 notification to the student and 1 to the recruiter, each naming the posting and the company | as expected | Pass | `OfferAgreementTest.acceptingNotifiesStudentAndRecruiters` | |
+| TC-OFF-027 | NOT-01, APP-06 | Offers & Allowance | Integration | State transition (OFFERED → REJECTED by decline) | Pending offer | Student declines | | offer DECLINED, application REJECTED, recruiter notified | as expected | Pass | `OfferAgreementTest.decliningRejectsAndNotifies` | |
+| TC-OFF-028 | OFF-02, NOT-01 | Offers & Allowance | Integration | State transition (PENDING → EXPIRED) | Pending offer whose deadline passed 8 h ago | Run the expiry job | | offer EXPIRED, application WITHDRAWN, student and recruiter notified | as expected | Pass | `OfferAgreementTest.unansweredOfferExpires` | |
+| TC-OFF-029 | OFF-06 | Offers & Allowance | System | Exploratory (charter: who sees the statement) | Seeded accepted placements (applications 10 and 116) | Open them as the coordinator | | statement and the "Placement agreement received on" form visible | as expected | Pass | manual | |
+| TC-OFF-030 | OFF-07 | Offers & Allowance | System | Use case test (record the agreement) | Seeded accepted placement (application 10, internship not started) | Coordinator records tomorrow's date, then today's date | tomorrow; today | tomorrow refused ("Enter a date that is not in the future."); today recorded, statement recalculated with no penalty, "Placement agreement received on dd/MM/yyyy" shown | as expected | Pass | manual | |
 
 ## Requirement to test traceability matrix
 
 | Requirement | Test cases | Automated tests | Issues found | Covered? |
 | --- | --- | --- | --- | --- |
 | OFF-01 | TC-OFF-016 | `OfferRulesTest` | #9 | Partly (allowance and dates are covered by vendor tests) |
-| OFF-02 | TC-OFF-012, TC-OFF-013 | `OfferRulesTest` | #10, #11, #19 | Yes |
+| OFF-02 | TC-OFF-012, TC-OFF-013, TC-OFF-028 | `OfferRulesTest`, `OfferAgreementTest` | #10, #11, #19 | Yes |
 | OFF-03 | TC-OFF-014, TC-OFF-015 | `OfferRulesTest` | #7, #8 | Yes |
 | OFF-04 | TC-OFF-017 | `OfferRulesTest` | #6 | Yes |
 | OFF-05 | TC-OFF-001 to TC-OFF-009, TC-OFF-019 | `AllowanceApiTest`, `OfferRulesTest` | #12, #13, #16 | Yes |
-| OFF-06 | TC-OFF-020 | manual | #18 | Yes |
-| OFF-07 | TC-OFF-006 | `AllowanceApiTest` | | Partly (Portal recalculation not yet) |
+| OFF-06 | TC-OFF-020, TC-OFF-029 | manual | #18 | Yes |
+| OFF-07 | TC-OFF-006, TC-OFF-021 to TC-OFF-024, TC-OFF-030 | `AllowanceApiTest`, `OfferAgreementTest` | | Yes (a late penalty through the Portal needs a placement whose internship has started) |
+| REL-01 | TC-OFF-024 | `OfferAgreementTest` | | Yes, for the agreement recalculation |
+| NOT-01, NOT-02 | TC-OFF-015, TC-OFF-025 to TC-OFF-028 | `OfferRulesTest`, `OfferAgreementTest` | #8 | Yes, for offer events |
 | REL-02 | TC-OFF-010, TC-OFF-011 | `AllowanceApiTest` | #14 | Yes, for `/allowance` |
 | NOT-04 | TC-OFF-018 | `OfferRulesTest` | #17, #19 | Yes |
 | ADM-01, MAINT-02 | TC-OFF-019 | `OfferRulesTest` | #15 | Partly (monthly cap only) |
