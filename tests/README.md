@@ -8,7 +8,8 @@ Every test names the requirement and the designed test case it implements, in `@
 | `portal/src/test` | Portal unit and integration tests (vendor suite + ours) | Unit, integration (white-box) | In use |
 | `tests/api/` | Engine API tests | API (black-box) | In use |
 | `tests/e2e/` | End-to-end tests (for example Playwright) | System | Planned |
-| `tests/performance/` | Performance scripts and results (k6) | Non-functional | Planned |
+| `tests/performance/` | Performance scripts and results (k6) | Non-functional | In use |
+| `tests/repro/` | Scripts that reproduce a defect on the running system | System | In use |
 | `tests/ai-eval/` | AI Assistant evaluation scripts and raw outputs | AI | Planned |
 
 ## Requirements
@@ -47,6 +48,35 @@ cd portal
 - **Our classes:**
   - `AllowanceApiTest`: TC-OFF-001 to TC-OFF-011 (`/allowance`: OFF-05, OFF-07, REL-02)
 
+## Performance tests (k6)
+
+- **Install:** k6 v2.4.0 from the official releases page (github.com/grafana/k6/releases). Unzip it and put the folder on the PATH,
+  or call `k6.exe` by its full path.
+- **Start the system:** run `.\start.cmd --jar --reset`. For PERF-01 and PERF-05, also log in as `coordinator` → Tools →
+  Generate test data → 1000.
+
+Run each script from the repository root:
+
+```powershell
+k6 run tests/performance/engine-perf02.js
+```
+```powershell
+k6 run tests/performance/portal-perf01.js
+```
+```powershell
+k6 run tests/performance/portal-perf03.js
+```
+
+| Script | Requirement | Test cases | Load |
+| --- | --- | --- | --- |
+| `engine-perf02.js` | PERF-02 | TC-PERF-001, 002 | 1 user per endpoint, 30 s each (`-e VUS=10` for 10 users) |
+| `portal-perf01.js` | PERF-01, PERF-05 | TC-PERF-003, 004 | 1 user per role (coordinator, recruiter, student), 60 s |
+| `portal-perf03.js` | PERF-03 | TC-PERF-005, 006 | 50 students, 5 minutes, 1–3 s think time |
+
+- **Pass or fail:** each script states the requirement as k6 thresholds, so k6 prints ✓ or ✗ for each and exits with
+  an error when a threshold fails.
+- **Saved results:** raw summaries are in `tests/performance/results/` (`--summary-export`).
+
 ## Results
 
 Failing tests are expected: each failure is a defect in the system, linked from the test case and the issue.
@@ -57,3 +87,6 @@ Failing tests are expected: each failure is a defect in the system, linked from 
 | 22/11/2026 | Portal `OfferRulesTest` | 8 | 0 | 8 | All 8 fail on OFF-02, OFF-03, OFF-01/APP-06, OFF-04, NOT-04 and ADM-01 defects |
 | 22/11/2026 | Engine `AllowanceApiTest` | 30 | 20 | 10 | Failures: transport at 30 h, monthly cap never applied, month starting on the 31st, 500 for missing or wrongly typed fields |
 | 23/11/2026 | Portal `OfferAgreementTest` | 11 | 11 | 0 | Agreement date, late days, refusals, Engine down while recalculating, offer notifications: all as required |
+| 23/11/2026 | k6 `engine-perf02.js` (1 user) | 6 thresholds | 5 | 1 | `/rank` with 200 candidates: p95 910 ms (limit 500 ms); eligibility and match p95 about 0.6 ms. With 10 users, rank p95 is 3.5 s |
+| 23/11/2026 | k6 `portal-perf01.js` (seed + 1,000) | 7 thresholds | 6 | 1 | All list pages p95 ≤ 28 ms; the Outbox is not paginated (PERF-05) |
+| 23/11/2026 | k6 `portal-perf03.js` (50 users, 5 min) | 3 thresholds | 3 | 0 | 8,686 requests, 0 errors, slowest 207 ms |

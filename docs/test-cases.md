@@ -45,6 +45,21 @@ A spreadsheet `docs/test-cases.xlsx` may replace this file. At least 10 test cas
 | TC-OFF-029 | OFF-06 | Offers & Allowance | System | Exploratory (charter: who sees the statement) | Seeded accepted placements (applications 10 and 116) | Open them as the coordinator | | statement and the "Placement agreement received on" form visible | as expected | Pass | manual | |
 | TC-OFF-030 | OFF-07 | Offers & Allowance | System | Use case test (record the agreement) | Seeded accepted placement (application 10, internship not started) | Coordinator records tomorrow's date, then today's date | tomorrow; today | tomorrow refused ("Enter a date that is not in the future."); today recorded, statement recalculated with no penalty, "Placement agreement received on dd/MM/yyyy" shown | as expected | Pass | manual | |
 
+### Performance (PERF): owner Salman
+
+Measured on 23/11/2026 on Windows 11, Java 27, with the Portal (`bin/uniplace-portal.jar`), the Engine and k6 v2.4.0
+on the same laptop.
+
+| Test case ID | Requirement | Module | Level | Technique | Preconditions | Steps | Test data | Expected result | Actual result | Status | Automated test | Issue |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| TC-PERF-001 | PERF-02 | Performance | API | Load test (1 user back to back, 30 s per endpoint) | Engine running | k6 sends `/eligibility` and `/match` requests | eligible student with CV and transcript; 5 student skills vs 3 required + 2 nice-to-have | p95 ≤ 200 ms for each endpoint | eligibility p95 0.56 ms, match p95 0.55 ms; all answers correct | Pass | `tests/performance/engine-perf02.js` | |
+| TC-PERF-002 | PERF-02 | Performance | API | Load test + scalability probe | Engine running | k6 sends `/rank` with 200 candidates (1 user, then 10); single curl requests with 10 to 500 candidates | 200 candidates, 5 seats; varied scores, GPAs and times | p95 ≤ 500 ms | 1 user: p95 910 ms (min 845 ms); 10 users: p95 3.5 s. Single requests: 100 → 0.11 s, 200 → 0.8 s, 500 (contract maximum) → 13 s: time grows much faster than the candidate count | Fail | `tests/performance/engine-perf02.js` | |
+| TC-PERF-003 | PERF-01 | Performance | System | Load test (1 user per role, 60 s) | Fresh start + Coordinator → Tools → Generate 1,000 applications | k6 opens postings, applications (first and a later page), candidates of every QTech posting, outbox, notifications | coordinator, recruiter.qtech, student.amal | p95 ≤ 2 s on every list page | p95: postings 8 ms, applications 9 ms, candidates 13 ms, outbox 28 ms, notifications 4 ms | Pass | `tests/performance/portal-perf01.js` | |
+| TC-PERF-004 | PERF-05 | Performance | System | Volume test + page inspection | As TC-PERF-003, then 10,000 more applications | Count the rows each list page returns; follow `?page=` | | every list paginated or limited (Applications and Notifications show 20 rows with a "next" link) | Coordinator → Outbox has no pagination and ignores `?page=`: 1,336 rows after +1,000, then 11,336 rows (2.2 MB of HTML) after +10,000, on a single page | Fail | `tests/performance/portal-perf01.js` (check "outbox bounded") | |
+| TC-PERF-005 | PERF-03 | Performance | System | Load test (50 users, 5 min, think time 1–3 s) | As TC-PERF-003 | 50 students log in and repeat: postings list → one posting → apply every third time | seeded student accounts; valid 220-character letter | no errors; no response above 3 s | 8,686 requests, 0 errors; slowest 207 ms; 93 applications submitted, 904 refused by business rules | Pass | `tests/performance/portal-perf03.js` | |
+| TC-PERF-006 | APP-02, APP-03 | Performance | System | Concurrency check after TC-PERF-005 | After the 50-user run | Coordinator → Applications: count active applications per student and per student and posting | | no student above 5 active; no two active applications of one student on one posting | max 5 active per student; no duplicates | Pass | manual (page count after `portal-perf03.js`) | |
+| TC-PERF-007 | PERF-04 | Performance | System | Requirements review + measurement | As TC-PERF-003 | Open the dashboard 10 times | coordinator | a measurable target | PERF-04 gives no number and no load ("loads quickly under normal load"), so it cannot pass or fail; measured median 8 ms, max 33 ms | Blocked | manual | |
+
 ## Requirement to test traceability matrix
 
 | Requirement | Test cases | Automated tests | Issues found | Covered? |
@@ -61,3 +76,8 @@ A spreadsheet `docs/test-cases.xlsx` may replace this file. At least 10 test cas
 | REL-02 | TC-OFF-010, TC-OFF-011 | `AllowanceApiTest` | #14 | Yes, for `/allowance` |
 | NOT-04 | TC-OFF-018 | `OfferRulesTest` | #17, #19 | Yes |
 | ADM-01, MAINT-02 | TC-OFF-019 | `OfferRulesTest` | #15 | Partly (monthly cap only) |
+| PERF-01 | TC-PERF-003 | `portal-perf01.js` | | Yes |
+| PERF-02 | TC-PERF-001, TC-PERF-002 | `engine-perf02.js` | | Yes |
+| PERF-03 | TC-PERF-005 | `portal-perf03.js` | | Yes |
+| PERF-04 | TC-PERF-007 | manual | | No: the requirement is not testable |
+| PERF-05 | TC-PERF-004 | `portal-perf01.js` | | Partly (the list pages above) |
