@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Integration tests of access control and output escaping (module Users & Access / Security).
+ * Test case numbers (TC-SEC-nnn) are those of docs/test-cases.md.
  *
  * Tests tagged "defect" are EXPECTED TO FAIL while the matching defect is open: their failure is the evidence.
  * Run only them:            .\mvnw.cmd test "-Dgroups=defect" "-Dmaven.test.failure.ignore=true"
@@ -75,10 +76,10 @@ class AccessControlTest extends IntegrationTest {
         return user(u.getUsername()).roles(u.getRole().name());
     }
 
-    // ---------------------------------------------------------------- TC-SEC-008 / TC-SEC-009 (application page)
+    // ---------------------------------------------------------------- TC-SEC-007 / TC-SEC-008 (application page)
 
     @Test
-    @DisplayName("TC-SEC-008 control / USR-05: a student can open their own application")
+    @DisplayName("TC-SEC-007 control / USR-05: a student can open their own application")
     void studentOpensOwnApplication() throws Exception {
         mvc.perform(get("/applications/" + aliceApplication.getId()).with(as(aliceUser)))
                 .andExpect(status().isOk());
@@ -86,7 +87,7 @@ class AccessControlTest extends IntegrationTest {
 
     @Test
     @Tag("defect")
-    @DisplayName("TC-SEC-008 / USR-05: a student cannot open another student's application (DEFECT)")
+    @DisplayName("TC-SEC-007 / USR-05: a student cannot open another student's application (DEFECT)")
     void studentCannotOpenAnotherStudentsApplication() throws Exception {
         mvc.perform(get("/applications/" + aliceApplication.getId()).with(as(bobUser)))
                 .andExpect(status().isForbidden());
@@ -94,22 +95,22 @@ class AccessControlTest extends IntegrationTest {
 
     @Test
     @Tag("defect")
-    @DisplayName("TC-SEC-009 / USR-05: a recruiter of another company cannot open the application (DEFECT)")
+    @DisplayName("TC-SEC-008 / USR-05: a recruiter of another company cannot open the application (DEFECT)")
     void recruiterOfAnotherCompanyCannotOpenApplication() throws Exception {
         mvc.perform(get("/applications/" + aliceApplication.getId()).with(as(otherRecruiter)))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    @DisplayName("TC-SEC-009 control / USR-05: a recruiter of the posting's company can open the application")
+    @DisplayName("TC-SEC-008 control / USR-05: a recruiter of the posting's company can open the application")
     void recruiterOfTheCompanyOpensApplication() throws Exception {
         mvc.perform(get("/applications/" + aliceApplication.getId()).with(as(acmeRecruiter)))
                 .andExpect(status().isOk());
     }
 
-    // ---------------------------------------------------------------- TC-SEC-010 (direct URLs)
+    // ---------------------------------------------------------------- TC-SEC-006 (direct URLs)
 
-    @ParameterizedTest(name = "TC-SEC-010 / USR-05, SEC-05: a student cannot open {0}")
+    @ParameterizedTest(name = "TC-SEC-006 / USR-05, SEC-05: a student cannot open {0}")
     @ValueSource(strings = {"/coordinator/settings", "/coordinator/users", "/coordinator/students",
             "/coordinator/audit", "/coordinator/outbox", "/coordinator/tools", "/recruiter/postings"})
     void studentCannotOpenStaffPages(String path) throws Exception {
@@ -118,22 +119,22 @@ class AccessControlTest extends IntegrationTest {
 
     @Test
     @Tag("defect")
-    @DisplayName("TC-SEC-010 / USR-05, SEC-05: a student cannot open /coordinator/reports (DEFECT)")
+    @DisplayName("TC-SEC-006 / USR-05, SEC-05: a student cannot open /coordinator/reports (DEFECT)")
     void studentCannotOpenReports() throws Exception {
         mvc.perform(get("/coordinator/reports").with(as(aliceUser))).andExpect(status().isForbidden());
     }
 
     @Test
     @Tag("defect")
-    @DisplayName("TC-SEC-010 / USR-05, SEC-05: a recruiter cannot open /coordinator/reports (DEFECT)")
+    @DisplayName("TC-SEC-006 / USR-05, SEC-05: a recruiter cannot open /coordinator/reports (DEFECT)")
     void recruiterCannotOpenReports() throws Exception {
         mvc.perform(get("/coordinator/reports").with(as(acmeRecruiter))).andExpect(status().isForbidden());
     }
 
-    // ---------------------------------------------------------------- TC-SEC-011 (documents)
+    // ---------------------------------------------------------------- TC-SEC-009 (documents)
 
     @Test
-    @DisplayName("TC-SEC-011 / USR-05: another student cannot download a student's document")
+    @DisplayName("TC-SEC-009 / USR-05: another student cannot download a student's document")
     void studentCannotDownloadAnotherStudentsDocument() throws Exception {
         Long id = documents.findByStudentAndType(alice, DocumentType.CV).orElseThrow().getId();
         mvc.perform(get("/documents/" + id).with(as(bobUser))).andExpect(status().isForbidden());
@@ -141,7 +142,7 @@ class AccessControlTest extends IntegrationTest {
 
     @Test
     @Tag("defect")
-    @DisplayName("TC-SEC-011 / USR-05: a recruiter of a company the student never applied to cannot download the document (DEFECT)")
+    @DisplayName("TC-SEC-009 / USR-05: a recruiter of a company the student never applied to cannot download the document (DEFECT)")
     void unrelatedRecruiterCannotDownloadDocument() throws Exception {
         Long id = documents.findByStudentAndType(alice, DocumentType.CV).orElseThrow().getId();
         // Today the handler lets every recruiter through and then answers 404 because the file is not on disk
@@ -149,10 +150,10 @@ class AccessControlTest extends IntegrationTest {
         mvc.perform(get("/documents/" + id).with(as(otherRecruiter))).andExpect(status().isForbidden());
     }
 
-    // ---------------------------------------------------------------- TC-SEC-012 (CSRF)
+    // ---------------------------------------------------------------- TC-SEC-010 (CSRF)
 
     @Test
-    @DisplayName("TC-SEC-012 control / SEC-02: a POST to the change-password form without a CSRF token is refused")
+    @DisplayName("TC-SEC-010 control / SEC-02: a POST to the change-password form without a CSRF token is refused")
     void passwordFormNeedsACsrfToken() throws Exception {
         mvc.perform(post("/account/password").with(as(aliceUser)).param("csrf_test", "1"))
                 .andExpect(status().isForbidden());
@@ -160,17 +161,17 @@ class AccessControlTest extends IntegrationTest {
 
     @Test
     @Tag("defect")
-    @DisplayName("TC-SEC-012 / SEC-02: a POST to the Coordinator settings without a CSRF token is refused (DEFECT)")
+    @DisplayName("TC-SEC-010 / SEC-02: a POST to the Coordinator settings without a CSRF token is refused (DEFECT)")
     void settingsFormNeedsACsrfToken() throws Exception {
         mvc.perform(post("/coordinator/settings").with(as(coordinator)).param("csrf_test", "1"))
                 .andExpect(status().isForbidden());
     }
 
-    // ---------------------------------------------------------------- TC-SEC-014 (output escaping)
+    // ---------------------------------------------------------------- TC-SEC-005 (output escaping)
 
     @Test
     @Tag("defect")
-    @DisplayName("TC-SEC-014 / SEC-07: HTML in a company name is escaped on the postings list (DEFECT)")
+    @DisplayName("TC-SEC-005 / SEC-07: HTML in a company name is escaped on the postings list (DEFECT)")
     void companyNameIsEscapedOnThePostingsList() throws Exception {
         Company evil = new Company("Evil <i>x</i> Ltd", "Technology", "hr@evil.qa");
         evil.setStatus(CompanyStatus.APPROVED);
