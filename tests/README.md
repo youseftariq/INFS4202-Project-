@@ -90,3 +90,4 @@ Failing tests are expected: each failure is a defect in the system, linked from 
 | 23/11/2026 | k6 `engine-perf02.js` (1 user) | 6 thresholds | 5 | 1 | `/rank` with 200 candidates: p95 910 ms (limit 500 ms); eligibility and match p95 about 0.6 ms. With 10 users, rank p95 is 3.5 s |
 | 23/11/2026 | k6 `portal-perf01.js` (seed + 1,000) | 7 thresholds | 6 | 1 | All list pages p95 ≤ 28 ms; the Outbox is not paginated (PERF-05) |
 | 23/11/2026 | k6 `portal-perf03.js` (50 users, 5 min) | 3 thresholds | 3 | 0 | 8,686 requests, 0 errors, slowest 207 ms |
+| 24/11/2026 | Portal full suite (vendor + ours), with coverage | 166 | 158 | 8 | The 8 failures are `OfferRulesTest` (defects). Line coverage: `service` 77.1% (branches 56.2%), up from 72.4% (52.8%); `OfferService` 84% (branches 59%), up from 57% (37%); `EngineRequestMapper` 96%. Still not covered in `OfferService`: the offer form pre-fill (`formFor`) and the Engine-down path while accepting (`tryComputeAllowance`) |
