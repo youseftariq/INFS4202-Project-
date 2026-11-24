@@ -17,3 +17,40 @@ One entry per meaningful use.
 | 24/11 | Salman | Claude Code (Claude Opus 5.5) | Draft Q5 root causes for my defects | Group my 19 issues by root cause using the Portal code and the vendor's tests; for each group give the cause, why the vendor's tests missed it, and recommendations with a priority | 8 root-cause groups in `docs/report/q5-root-causes-salman.md` | Code facts and vendor test names checked against the source; Engine causes marked as inferred; an overstated claim about #16 toned down | none |
 
 ## Reflection
+
+### Salman (Offers & Allowance, Settings, Performance)
+
+**Where AI helped.**
+- **Reading code fast.** Claude read `OfferService`, `EngineRequestMapper` and `SettingsService` against the requirements
+  much faster than I could. All six offer leads it gave me (deadline, auto-withdraw, state guard, seat locking, reminders,
+  monthly cap) turned into real defects (#6 to #10, #15, #17), and a later read found #29.
+- **Repetitive test code.** It wrote the parts I would have spent the most time on: the Engine start-up helper, the
+  controllable clock, the two-thread race test and the k6 login and threshold code.
+
+**Where AI was wrong.**
+- **The Engine-down case.** Claude predicted that recording an agreement date while the Engine is down would be a defect.
+  The test and the running system both showed that the Portal handles it correctly, so I did not report it.
+- **The first PERF-01 run.** It was invalid: k6 reset the cookies between iterations, so every "list page" request was
+  really the login page (about 1 ms). The numbers looked excellent and were meaningless. It was caught by checking
+  what the pages returned.
+- **A reserved tag name.** A `check` tag name it chose is reserved in k6, which made two thresholds meaningless until it
+  was renamed.
+- **Engine causes.** In the Q5 draft it stated how the Engine handles a month starting on the 31st, although the Engine is
+  a black box. It was corrected to say only what we observed before the draft was committed.
+- **A deleted database.** It once deleted the Portal data while old copies of the Portal and Engine were still running.
+
+**How I checked it.**
+- **Reproduce before filing.** No issue was filed until it was reproduced on the running system or shown by a failing
+  test, and preferably both. #11 was first shown only by a test, so I reproduced it on the system later. #15 can only be
+  shown by a test, because the Engine ignores the cap anyway (#12).
+- **Expected results by hand.** The expected values in the API tests were worked out by hand from OFF-05 and the OpenAPI
+  rules, not taken from the AI.
+- **Thresholds from the requirements.** The k6 pass/fail thresholds come from the PERF requirements and were set before
+  the runs.
+
+**What I learned.**
+- **Hypotheses, not findings.** AI is strong where the work is broad and mechanical: reading a lot of code, and writing
+  test code around a design I already have. It is weak at judging behaviour it cannot see, such as runtime state, the
+  Engine's internals or what a tool really measured. Its predictions are hypotheses to test, not findings.
+- **The test oracle has to be mine.** Next time I would write the expected results myself before asking for the test
+  code, every time.
