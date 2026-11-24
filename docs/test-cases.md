@@ -60,6 +60,12 @@ on the same laptop.
 | TC-PERF-006 | APP-02, APP-03 | Performance | System | Concurrency check after TC-PERF-005 | After the 50-user run | Coordinator → Applications: count active applications per student and per student and posting | | no student above 5 active; no two active applications of one student on one posting | max 5 active per student; no duplicates | Pass | manual (page count after `portal-perf03.js`) | |
 | TC-PERF-007 | PERF-04 | Performance | System | Requirements review + measurement | As TC-PERF-003 | Open the dashboard 10 times | coordinator | a measurable target | PERF-04 gives no number and no load ("loads quickly under normal load"), so it cannot pass or fail; measured median 8 ms, max 33 ms | Blocked | manual | #23 |
 
+### Settings (ADM-01): other module tested by Salman
+
+| Test case ID | Requirement | Module | Level | Technique | Preconditions | Steps | Test data | Expected result | Actual result | Status | Automated test | Issue |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| TC-ADM-001 | ADM-01, APP-02 | Settings | System | Code review (static fields in `SettingsService`), then a state test on the running system | Fresh start; `student.ahmed` (GOOD) has 1 active application | Coordinator sets "Active applications, good standing" = 1 without restarting; the student applies to another open posting | Customer Experience Intern (Gulf Bank), valid letter | application refused: 1 active is the new limit | submitted on 24/11/2026: the student holds 2 active applications with the limit at 1; the limits are read once at start-up | Fail | manual | #29 |
+
 ## Requirement to test traceability matrix
 
 | Requirement | Test cases | Automated tests | Issues found | Covered? |
@@ -75,7 +81,7 @@ on the same laptop.
 | NOT-01, NOT-02 | TC-OFF-015, TC-OFF-025 to TC-OFF-028 | `OfferRulesTest`, `OfferAgreementTest` | #8 | Yes, for offer events |
 | REL-02 | TC-OFF-010, TC-OFF-011 | `AllowanceApiTest` | #14 | Yes, for `/allowance` |
 | NOT-04 | TC-OFF-018 | `OfferRulesTest` | #17, #19 | Yes |
-| ADM-01, MAINT-02 | TC-OFF-019 | `OfferRulesTest` | #15 | Partly (monthly cap only) |
+| ADM-01, MAINT-02 | TC-OFF-019, TC-ADM-001 | `OfferRulesTest`, manual | #15, #29 | Partly (monthly cap and active-application limits) |
 | PERF-01 | TC-PERF-003 | `portal-perf01.js` | #24 | Yes |
 | PERF-02 | TC-PERF-001, TC-PERF-002 | `engine-perf02.js` | #21, #24 | Yes |
 | PERF-03 | TC-PERF-005 | `portal-perf03.js` | | Yes |
