@@ -74,6 +74,7 @@ public class AiEval {
 
         HttpClient http = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).connectTimeout(Duration.ofSeconds(15)).build();
         int calls = 0;
+        outer:
         for (Object lo : letters) {
             Map<?, ?> l = (Map<?, ?>) lo;
             String id = (String) l.get("id");
@@ -102,6 +103,11 @@ public class AiEval {
                     note = "request failed: " + e.getClass().getSimpleName() + " " + String.valueOf(e.getMessage()) + "; ";
                 }
                 long elapsed = (System.nanoTime() - t0) / 1_000_000;
+                if (status == 429) {
+                    System.out.println("HTTP 429: the provider says the request limit is reached (free models allow about 50 requests per day).\n"
+                            + "Stopped at " + id + " run " + run + ". Nothing was saved for this call. Run the same command later: finished runs are skipped.");
+                    break outer;
+                }
                 if (elapsed > 10_000) note += "slower than 10 s (AI-05); ";
                 calls++;
                 boolean answered = status == 200;
@@ -152,7 +158,7 @@ public class AiEval {
         int failedAttempts = 0, slow = 0; long maxMs = 0, sumMs = 0; int timed = 0;
         for (int i = 1; i < lines.size(); i++) {
             String[] c = lines.get(i).split(",", -1);
-            if (c.length < 15) continue;
+            if (c.length < 15 || c[7].equals("429")) continue;
             boolean ok = c[8].equals("true");
             if (!ok) failedAttempts++;
             int score = ok && !c[9].isEmpty() ? Integer.parseInt(c[9]) : -1;
