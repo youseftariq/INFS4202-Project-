@@ -1,0 +1,48 @@
+
+
+  █ THRESHOLDS 
+
+    checks
+    ✓ 'rate==1' rate=100.00%
+
+    http_req_duration{phase:test}
+    ✓ 'max<3000' max=207.06ms
+
+    http_req_failed{phase:test}
+    ✓ 'rate==0' rate=0.00%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 7535    24.660694/s
+    checks_succeeded...: 100.00% 7535 out of 7535
+    checks_failed......: 0.00%   0 out of 7535
+
+    ✓ postings list 200
+    ✓ posting page 200
+    ✓ apply answered 200
+
+    CUSTOM
+    applications_refused...........: 904    2.958629/s
+    applications_submitted.........: 93     0.304372/s
+
+    HTTP
+    http_req_duration..............: avg=8.01ms min=645.29µs med=5.88ms max=490.36ms p(90)=8.7ms  p(95)=9.73ms
+      { expected_response:true }...: avg=8.01ms min=645.29µs med=5.88ms max=490.36ms p(90)=8.7ms  p(95)=9.73ms
+      { phase:test }...............: avg=6.27ms min=645.29µs med=5.85ms max=207.06ms p(90)=8.54ms p(95)=9.44ms
+    http_req_failed................: 0.00%  0 out of 8686
+      { phase:test }...............: 0.00%  0 out of 8532
+    http_reqs......................: 8686   28.427709/s
+
+    EXECUTION
+    iteration_duration.............: avg=4.61s  min=2.04s    med=4.4s   max=8.74s    p(90)=6.51s  p(95)=7.05s 
+    iterations.....................: 3269   10.698847/s
+    vus............................: 1      min=1         max=50
+    vus_max........................: 50     min=50        max=50
+
+    NETWORK
+    data_received..................: 53 MB  173 kB/s
+    data_sent......................: 1.6 MB 5.4 kB/s
+
+
+
