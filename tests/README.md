@@ -34,6 +34,8 @@ cd portal
 - **Our classes:**
   - `service/OfferRulesTest`: TC-OFF-012 to TC-OFF-019 and TC-OFF-031 (OFF-01..04, NOT-04, ADM-01, REL-01)
   - `service/OfferAgreementTest`: TC-OFF-021 to TC-OFF-028 (OFF-07, REL-01, NOT-01, NOT-02)
+  - `service/ApplicationRulesTest`: TC-APP-001 to TC-APP-007, 010, 014, 015, 017 and 026 (APP-01..09, STU-03, POS-04, COM-02)
+  - `engine/ApplicationEngineRulesTest`: TC-APP-009 and TC-APP-011 (match-score cache and Engine outage: APP-04, REL-01)
 
 ## Engine API tests (black-box)
 
@@ -47,6 +49,7 @@ cd portal
   To test an Engine that is already running instead, add `"-Dengine.url=http://127.0.0.1:8081/api/v1"`.
 - **Our classes:**
   - `AllowanceApiTest`: TC-OFF-001 to TC-OFF-011 (`/allowance`: OFF-05, OFF-07, REL-02)
+  - `ApplicationsApiTest`: TC-APP-018 to TC-APP-025 (`/eligibility`, `/match`, `/rank`: APP-04, APP-09, STU-04, REL-02)
 
 ## Performance tests (k6)
 
