@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Black-box tests of POST /schedule/validate (interview slots; module Interviews, INT-02), designed in
+ * Black-box tests of POST /schedule/validate (interview slots; module Interviews, INT-01, INT-02, INT-03, INT-05), designed in
  * docs/test-cases.md as TC-INT-001 to TC-INT-010. The oracle is the OpenAPI description of /schedule/validate:
  * a slot is valid when it lasts 15 to 120 minutes, falls on Sunday to Thursday, starts at or after 08:00, ends at or
  * before 18:00 on the same day, and does not overlap another slot; a slot that starts exactly when another ends does
@@ -81,7 +81,7 @@ class ScheduleApiTest {
     // ------------------------------------------------------------------ TC-INT-001 duration
 
     @Test
-    @DisplayName("TC-INT-001 / INT-02: durations of 14, 15, 119 and 121 minutes (boundaries that work)")
+    @DisplayName("TC-INT-001 / INT-01: durations of 14, 15, 119 and 121 minutes (boundaries that work)")
     void durationBoundariesAroundTheLimits() {
         assertAll(
                 expect(false, sunday("10:00", "10:14"), "14 minutes"),
@@ -91,7 +91,7 @@ class ScheduleApiTest {
     }
 
     @Test
-    @DisplayName("TC-INT-001 / INT-02: a slot of exactly 120 minutes is valid (DEFECT)")
+    @DisplayName("TC-INT-001 / INT-01: a slot of exactly 120 minutes is valid (DEFECT)")
     void slotOfExactlyTwoHoursIsValidDefect() {
         assertAll(expect(true, sunday("10:00", "12:00"), "120 minutes"));
     }
@@ -144,7 +144,7 @@ class ScheduleApiTest {
     // ------------------------------------------------------------------ TC-INT-005 real overlaps
 
     @Test
-    @DisplayName("TC-INT-005 / INT-02: a real overlap with the recruiter's or the student's slots is refused")
+    @DisplayName("TC-INT-005 / INT-03: a real overlap with the recruiter's or the student's slots is refused")
     void realOverlapsAreRefused() {
         ObjectNode c = sunday("10:00", "11:00");
         assertAll(
@@ -159,7 +159,7 @@ class ScheduleApiTest {
     }
 
     @Test
-    @DisplayName("TC-INT-005 / INT-02: a slot on another day or hours away does not conflict")
+    @DisplayName("TC-INT-005 / INT-03: a slot on another day or hours away does not conflict")
     void slotsThatDoNotOverlapAreIgnored() {
         ObjectNode c = sunday("10:00", "11:00");
         ObjectNode otherDay = slot("2026-11-30T10:00:00+03:00", "2026-11-30T11:00:00+03:00");
@@ -171,7 +171,7 @@ class ScheduleApiTest {
     // ------------------------------------------------------------------ TC-INT-006 touching slots
 
     @Test
-    @DisplayName("TC-INT-006 / INT-02: back-to-back slots (one starts exactly when the other ends) do not overlap (DEFECT)")
+    @DisplayName("TC-INT-006 / INT-03: back-to-back slots (one starts exactly when the other ends) do not overlap (DEFECT)")
     void backToBackSlotsAreValidDefect() {
         ObjectNode c = sunday("10:00", "11:00");
         assertAll(
@@ -184,7 +184,7 @@ class ScheduleApiTest {
     // ------------------------------------------------------------------ TC-INT-007 several slots
 
     @Test
-    @DisplayName("TC-INT-007 / INT-02: with several slots, every conflict is reported and the unrelated ones are not")
+    @DisplayName("TC-INT-007 / INT-03: with several slots, every conflict is reported and the unrelated ones are not")
     void severalSlotsAreAllChecked() {
         ObjectNode c = sunday("10:00", "11:00");
         JsonNode result = validate(body(c,
