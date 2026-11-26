@@ -173,11 +173,11 @@ public class AiEval {
             int spread = mx < 0 ? 0 : mx - mn;
             if (spread > 10) spreadFail++;
             tot += n; inb += b;
-            sb.append(String.format("%-7s %-5d %-7d %-7d %-4s %-4s %-7d %.1f%s%n", e.getKey(), n, p, b, mx < 0 ? "-" : mn, mx < 0 ? "-" : mx, spread, p == 0 ? 0 : sum / p, spread > 10 ? "   <-- AI-09 violated" : ""));
+            sb.append(String.format(java.util.Locale.ROOT, "%-7s %-5d %-7d %-7d %-4s %-4s %-7d %.1f%s%n", e.getKey(), n, p, b, mx < 0 ? "-" : mn, mx < 0 ? "-" : mx, spread, p == 0 ? 0 : sum / p, spread > 10 ? "   <-- AI-09 violated" : ""));
         }
-        sb.append(String.format("%nRuns counted: %d, inside the reference band: %d (%.0f%%). Letters whose spread is above 10: %d%n", tot, inb, tot == 0 ? 0 : 100.0 * inb / tot, spreadFail));
-        sb.append(String.format("Attempts that failed or could not be parsed (all attempts, including retried ones): %d%n", failedAttempts));
-        if (timed > 0) sb.append(String.format("Response time: average %d ms, slowest %d ms, %d call(s) over 10 s (the Portal gives up after 10 s, AI-05)%n", sumMs / timed, maxMs, slow));
+        sb.append(String.format(java.util.Locale.ROOT, "%nRuns counted: %d, inside the reference band: %d (%.0f%%). Letters whose spread is above 10: %d%n", tot, inb, tot == 0 ? 0 : 100.0 * inb / tot, spreadFail));
+        sb.append(String.format(java.util.Locale.ROOT, "Attempts that failed or could not be parsed (all attempts, including retried ones): %d%n", failedAttempts));
+        if (timed > 0) sb.append(String.format(java.util.Locale.ROOT, "Response time: average %d ms, slowest %d ms, %d call(s) slower than 10 s (AI-05 requires the Portal to stop waiting after 10 s)%n", sumMs / timed, maxMs, slow));
         Files.writeString(summary, sb.toString(), StandardCharsets.UTF_8);
     }
 
