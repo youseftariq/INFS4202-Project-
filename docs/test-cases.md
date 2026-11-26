@@ -44,6 +44,7 @@ A spreadsheet `docs/test-cases.xlsx` may replace this file. At least 10 test cas
 | TC-OFF-028 | OFF-02, NOT-01 | Offers & Allowance | Integration | State transition (PENDING → EXPIRED) | Pending offer whose deadline passed 8 h ago | Run the expiry job | | offer EXPIRED, application WITHDRAWN, student and recruiter notified | as expected | Pass | `OfferAgreementTest.unansweredOfferExpires` | |
 | TC-OFF-029 | OFF-06 | Offers & Allowance | System | Exploratory (charter: who sees the statement) | Seeded accepted placements (applications 10 and 116) | Open them as the coordinator | | statement and the "Placement agreement received on" form visible | as expected | Pass | manual | |
 | TC-OFF-030 | OFF-07 | Offers & Allowance | System | Use case test (record the agreement) | Seeded accepted placement (application 10, internship not started) | Coordinator records tomorrow's date, then today's date | tomorrow; today | tomorrow refused ("Enter a date that is not in the future."); today recorded, statement recalculated with no penalty, "Placement agreement received on dd/MM/yyyy" shown | as expected | Pass | manual | |
+| TC-OFF-031 | REL-01, OFF-06 | Offers & Allowance | Integration + System | Fault injection (Engine down while a student accepts); designed from a path the JaCoCo report showed as uncovered (`OfferService.tryComputeAllowance`) | Pending offer; the Engine stops answering | Student accepts the offer | Engine mock throws `EngineUnavailableException`; on the system the Engine process is stopped | acceptance refused with a clear message; the offer stays PENDING, the application OFFERED, no seat taken | accepted: "Congratulations! You accepted the offer.", application Accepted, statement "not available yet" even after the Engine is back; `tryComputeAllowance` swallows the error | Fail | `OfferRulesTest.acceptWhileEngineDownIsRefused` | #41 |
 
 ### Performance (PERF): owner Salman
 
@@ -76,9 +77,9 @@ on the same laptop.
 | OFF-03 | TC-OFF-014, TC-OFF-015 | `OfferRulesTest` | #7, #8 | Yes |
 | OFF-04 | TC-OFF-017 | `OfferRulesTest` | #6 | Yes |
 | OFF-05 | TC-OFF-001 to TC-OFF-009, TC-OFF-019 | `AllowanceApiTest`, `OfferRulesTest` | #12, #13, #16 | Yes |
-| OFF-06 | TC-OFF-020, TC-OFF-029 | manual | #18 | Yes |
+| OFF-06 | TC-OFF-020, TC-OFF-029, TC-OFF-031 | manual, `OfferRulesTest` | #18, #41 | Yes |
 | OFF-07 | TC-OFF-006, TC-OFF-021 to TC-OFF-024, TC-OFF-030 | `AllowanceApiTest`, `OfferAgreementTest` | | Yes (a late penalty through the Portal needs a placement whose internship has started) |
-| REL-01 | TC-OFF-024 | `OfferAgreementTest` | | Yes, for the agreement recalculation |
+| REL-01 | TC-OFF-024, TC-OFF-031 | `OfferAgreementTest`, `OfferRulesTest` | #41 | Yes, for recording the agreement and for accepting an offer |
 | NOT-01, NOT-02 | TC-OFF-015, TC-OFF-025 to TC-OFF-028 | `OfferRulesTest`, `OfferAgreementTest` | #8 | Yes, for offer events |
 | REL-02 | TC-OFF-010, TC-OFF-011 | `AllowanceApiTest` | #14 | Yes, for `/allowance` |
 | NOT-04 | TC-OFF-018 | `OfferRulesTest` | #17, #19 | Yes |

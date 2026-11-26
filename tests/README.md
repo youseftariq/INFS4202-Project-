@@ -32,7 +32,7 @@ cd portal
   The `failure.ignore` flag makes Maven write the coverage report even when tests fail.
 - **One class only:** add `-Dtest=OfferRulesTest`.
 - **Our classes:**
-  - `service/OfferRulesTest`: TC-OFF-012 to TC-OFF-019 (OFF-01..04, NOT-04, ADM-01)
+  - `service/OfferRulesTest`: TC-OFF-012 to TC-OFF-019 and TC-OFF-031 (OFF-01..04, NOT-04, ADM-01, REL-01)
   - `service/OfferAgreementTest`: TC-OFF-021 to TC-OFF-028 (OFF-07, REL-01, NOT-01, NOT-02)
 
 ## Engine API tests (black-box)
@@ -91,3 +91,5 @@ Failing tests are expected: each failure is a defect in the system, linked from 
 | 23/11/2026 | k6 `portal-perf01.js` (seed + 1,000) | 7 thresholds | 6 | 1 | All list pages p95 ≤ 28 ms; the Outbox is not paginated (PERF-05) |
 | 23/11/2026 | k6 `portal-perf03.js` (50 users, 5 min) | 3 thresholds | 3 | 0 | 8,686 requests, 0 errors, slowest 207 ms |
 | 24/11/2026 | Portal full suite (vendor + ours), with coverage | 166 | 158 | 8 | The 8 failures are `OfferRulesTest` (defects). Line coverage: `service` 77.1% (branches 56.2%), up from 72.4% (52.8%); `OfferService` 84% (branches 59%), up from 57% (37%); `EngineRequestMapper` 96%. Still not covered in `OfferService`: the offer form pre-fill (`formFor`) and the Engine-down path while accepting (`tryComputeAllowance`) |
+| 26/11/2026 | Portal `OfferRulesTest` (with TC-OFF-031) | 9 | 0 | 9 | New test: accepting while the Engine is down goes through without an allowance (REL-01, #41) |
+| 26/11/2026 | Portal full suite (vendor + ours), with coverage | 167 | 158 | 9 | The 9 failures are `OfferRulesTest` (defects). Line coverage: `service` 77.5% (branches 56.2%); `OfferService` 87% (branches 59%). `tryComputeAllowance` is now covered by TC-OFF-031 |
