@@ -1,12 +1,12 @@
 # Q5. Root causes and recommendations: Offers & Allowance, Settings, Performance (Salman)
 
-Draft for the final report (section Q5). It covers the 19 issues Salman found: #6 to #19, #21 to #24 and #29.
+Draft for the final report (section Q5). It covers the 20 issues Salman found: #6 to #19, #21 to #24, #29 and #41.
 The team merges it with the other modules' groups.
 
 | Severity | Count | Issues |
 | --- | --- | --- |
 | Critical | 2 | #6, #7 |
-| Major | 10 | #8, #9, #10, #11, #12, #13, #14, #15, #21, #29 |
+| Major | 11 | #8, #9, #10, #11, #12, #13, #14, #15, #21, #29, #41 |
 | Minor | 7 | #16, #17, #18, #19, #22, #23, #24 |
 
 "Why it got past the vendor" is based on the vendor's own test suite in `portal/src/test` (147 tests, all passing).
@@ -24,6 +24,7 @@ The Engine is a black box, so its causes are inferred from its answers and marke
 | RC6 | No performance budget in design or testing | #21, #22 | P2 |
 | RC7 | Formatting helper not used everywhere | #18 | P3 |
 | RC8 | Requirements not reviewed for consistency and measurability | #19, #23, #24 | P2 |
+| RC9 | An Engine failure is swallowed instead of refusing the operation | #41 | P2 |
 
 ## RC1. Check-then-act on shared data without concurrency control
 
@@ -200,3 +201,22 @@ compared with each other, or when someone tries to write a pass/fail test.
   users to PERF-01 and PERF-02. Fixes #23, #24.
 - **P3:** review new requirements with a checklist: no hard-coded values that Settings control, and a number plus a load
   for every non-functional requirement.
+
+## RC9. An Engine failure is swallowed instead of refusing the operation
+
+**Defects:** #41 (accepting an offer while the Engine is down succeeds with no allowance and no message).
+
+**Cause:** `OfferService.accept()` first takes the seat and marks the offer and the application ACCEPTED. Only then does
+it call `tryComputeAllowance()`, which catches `EngineUnavailableException`, sets the allowance to null and only writes a
+warning to the log. The same exception is handled correctly elsewhere: recording the agreement date while the Engine
+is down shows the error and changes nothing (TC-OFF-024). The accept path chose to "try" instead.
+
+**Why it got past the vendor:** `OfferServiceTest` always stubs the Engine to return an allowance
+(`when(engine.allowance(any())).thenReturn(…)`), so no test runs `accept()` with the Engine down. Our coverage report
+showed `tryComputeAllowance` as the only uncovered error path in `OfferService`, which is how we found it.
+
+**Recommendations:**
+- **P2:** in `accept()`, compute the allowance before changing any state, or let `EngineUnavailableException` propagate
+  so that the transaction rolls back, and show its message to the student. Fixes #41.
+- **P3:** for every call to the Engine, add a test where the mocked Engine throws and assert that nothing changed (ours:
+  `OfferRulesTest.acceptWhileEngineDownIsRefused`).

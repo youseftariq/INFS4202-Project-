@@ -1,6 +1,6 @@
 # Q4. Defects found: Offers & Allowance, Settings, Performance (Salman)
 
-Draft for the final report (section Q4). It lists the 19 issues Salman found. The full reports are in GitHub Issues.
+Draft for the final report (section Q4). It lists the 20 issues Salman found. The full reports are in GitHub Issues.
 No report has been closed as a duplicate or as invalid.
 
 ## Totals
@@ -8,10 +8,10 @@ No report has been closed as a duplicate or as invalid.
 | Severity | Count | Points if valid |
 | --- | --- | --- |
 | Critical | 2 | 6 |
-| Major | 10 | 20 |
+| Major | 11 | 22 |
 | Minor | 7 | 7 |
 | Enhancement | 0 | 0 |
-| **Total** | **19** | **33** |
+| **Total** | **20** | **35** |
 
 | Category | Count | Issues |
 | --- | --- | --- |
@@ -20,7 +20,7 @@ No report has been closed as a duplicate or as invalid.
 | requirements | 3 | #19, #23, #24 |
 | configuration | 2 | #15, #29 |
 | performance | 2 | #21, #22 |
-| integration | 1 | #14 |
+| integration | 2 | #14, #41 |
 | ui | 1 | #18 |
 
 **Critical defects:**
@@ -29,8 +29,8 @@ No report has been closed as a duplicate or as invalid.
   placement.
 
 **How they were found:**
-- **Automated tests:** 14 issues have a failing automated test:
-  - 8 from Portal integration tests (`OfferRulesTest`): #6, #7, #8, #9, #10, #11, #15, #17.
+- **Automated tests:** 15 issues have a failing automated test:
+  - 9 from Portal integration tests (`OfferRulesTest`): #6, #7, #8, #9, #10, #11, #15, #17, #41.
   - 4 from Engine API tests (`AllowanceApiTest`): #12, #13, #14, #16.
   - 2 from k6 thresholds: #21, #22.
 - **Manual testing:** #18 (exploratory) and #29 (code review, then confirmed on the running system).
@@ -62,5 +62,6 @@ No report has been closed as a duplicate or as invalid.
 | #23 | Specification: PERF-04 is not testable (no time limit or load) | requirements | Minor | PERF-04 (specification) | Salman |
 | #24 | Specification: PERF-01 and PERF-02 do not say under what load the p95 is measured | requirements | Minor | PERF-01, PERF-02 (specification) | Salman |
 | #29 | Changing the active-application limits or the shortlist threshold in Settings has no effect until the Portal restarts | configuration | Major | ADM-01, APP-02, APP-07 | Salman |
+| #41 | Accepting an offer while the Engine is down succeeds with no allowance and no message | integration | Major | REL-01, OFF-06 | Salman |
 
 The severities are our own. The instructor confirms them when scoring R5.

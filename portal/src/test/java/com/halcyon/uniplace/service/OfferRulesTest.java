@@ -6,6 +6,7 @@ import com.halcyon.uniplace.domain.Company;
 import com.halcyon.uniplace.domain.CompanyStatus;
 import com.halcyon.uniplace.domain.Notification;
 import com.halcyon.uniplace.domain.Offer;
+import com.halcyon.uniplace.domain.OfferStatus;
 import com.halcyon.uniplace.domain.Posting;
 import com.halcyon.uniplace.domain.PostingStatus;
 import com.halcyon.uniplace.domain.Student;
@@ -14,6 +15,7 @@ import com.halcyon.uniplace.engine.EngineClient;
 import com.halcyon.uniplace.engine.EngineDtos.AllowanceLine;
 import com.halcyon.uniplace.engine.EngineDtos.AllowanceRequest;
 import com.halcyon.uniplace.engine.EngineDtos.AllowanceResult;
+import com.halcyon.uniplace.engine.EngineUnavailableException;
 import com.halcyon.uniplace.repository.NotificationRepository;
 import com.halcyon.uniplace.repository.OfferRepository;
 import com.halcyon.uniplace.support.IntegrationTest;
@@ -272,5 +274,23 @@ class OfferRulesTest extends IntegrationTest {
         BigDecimal cap = sent.getValue().monthlyCap;
         assertEquals(0, new BigDecimal("4000").compareTo(cap == null ? BigDecimal.ZERO : cap),
                 "monthlyCap sent to the Engine: " + cap);
+    }
+
+    @Test
+    @DisplayName("TC-OFF-031 / REL-01: accepting an offer while the Engine is down is refused and changes nothing")
+    void acceptWhileEngineDownIsRefused() {
+        Posting p = openPosting(company, "Risk Intern", List.of("Python"), 2);
+        Student s = student("3.00", List.of("Python"));
+        User su = studentUser(s);
+        Application a = application(s, p, ApplicationState.INTERVIEW, 70);
+        Offer o = service.issue(recruiter, a.getId(), form(p));
+        when(engine.allowance(any())).thenThrow(new EngineUnavailableException());
+
+        assertThrows(BusinessRuleException.class, () -> service.accept(su, o.getId()),
+                "the acceptance went through without an allowance");
+        assertAll(
+                () -> assertEquals(OfferStatus.PENDING, offers.findById(o.getId()).orElseThrow().getStatus()),
+                () -> assertEquals(ApplicationState.OFFERED, stateOf(a)),
+                () -> assertEquals(0, postings.findById(p.getId()).orElseThrow().getSeatsTaken()));
     }
 }
