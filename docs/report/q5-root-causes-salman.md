@@ -96,13 +96,13 @@ test with a fixed clock is `EngineRequestMapperTest`, which does not test offers
 
 **Defects:**
 - #15: the monthly cap from Settings is never sent to the Engine.
-- #29: changing the active-application limits has no effect until the Portal restarts.
+- #29: changing the active-application limits or the shortlist threshold has no effect until the Portal restarts.
 
 **Cause:**
 - `EngineRequestMapper.toAllowanceRequest()` copies the transport supplement and the penalty settings, but never sets
   `monthlyCap` (#15).
-- `SettingsService.maxActiveGood()` and `maxActiveProbation()` keep the limits in `static` fields that are filled at
-  start-up and never cleared when a setting is saved (#29).
+- `SettingsService.maxActiveGood()`, `maxActiveProbation()` and `shortlistThreshold()` keep their values in `static` fields that are filled at
+  first use (the limits at start-up) and never cleared when a setting is saved (#29).
 
 In both cases the Settings page and the audit log show the new value, so the Coordinator cannot see that it is ignored.
 

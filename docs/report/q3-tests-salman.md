@@ -13,18 +13,18 @@ Offers & Allowance (OFF-01 to OFF-07) touches more of the strategy's high risks 
 
 ## Test cases
 
-38 test cases: 30 for the primary module (OFF), 7 for performance (PERF) and 1 for Settings (ADM-01).
+39 test cases: 30 for the primary module (OFF), 7 for performance (PERF) and 2 for Settings (ADM-01).
 
 | Module | Test cases | Black-box | White-box | Functional | Non-functional | Pass | Fail | Blocked |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Offers & Allowance (OFF) | 30 | 25 | 5 | 26 | 4 | 17 | 13 | 0 |
 | Performance (PERF) | 7 | 7 | 0 | 0 | 7 | 4 | 2 | 1 |
-| Settings (ADM-01) | 1 | 0 | 1 | 1 | 0 | 0 | 1 | 0 |
-| **Total** | **38** | **32** | **6** | **27** | **11** | **21** | **16** | **1** |
+| Settings (ADM-01) | 2 | 0 | 2 | 2 | 0 | 0 | 2 | 0 |
+| **Total** | **39** | **32** | **7** | **28** | **11** | **21** | **17** | **1** |
 
 **Classification used:**
 - **White-box:** the test case was designed from the code: statement or branch coverage, data-flow review or code
-  review. These are TC-OFF-012, 016, 018, 019, 023 and TC-ADM-001.
+  review. These are TC-OFF-012, 016, 018, 019, 023, TC-ADM-001 and TC-ADM-002.
 - **Non-functional:** the test case verifies a REL or PERF requirement. These are TC-OFF-010, 011, 017, 024 and all PERF
   cases.
 
@@ -44,8 +44,8 @@ Offers & Allowance (OFF-01 to OFF-07) touches more of the strategy's high risks 
 TC-OFF-018 combines a code review with a state-based test, so it appears in two rows. The other rows each list a test
 case once.
 
-**Levels:** 13 API, 16 integration, 9 system. **Automation:** 32 test cases are automated, and 6 are run by hand on the
-running system (TC-OFF-020, 029, 030, TC-PERF-006, 007, TC-ADM-001).
+**Levels:** 13 API, 16 integration, 10 system. **Automation:** 32 test cases are automated, and 7 are run by hand on the
+running system (TC-OFF-020, 029, 030, TC-PERF-006, 007, TC-ADM-001, 002).
 
 ## Automated tests
 

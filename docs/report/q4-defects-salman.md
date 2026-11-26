@@ -61,6 +61,6 @@ No report has been closed as a duplicate or as invalid.
 | #22 | Coordinator Outbox is not paginated: every notification is on one page | performance | Minor | PERF-05 | Salman |
 | #23 | Specification: PERF-04 is not testable (no time limit or load) | requirements | Minor | PERF-04 (specification) | Salman |
 | #24 | Specification: PERF-01 and PERF-02 do not say under what load the p95 is measured | requirements | Minor | PERF-01, PERF-02 (specification) | Salman |
-| #29 | Changing the active-application limits in Settings has no effect until the Portal restarts | configuration | Major | ADM-01, APP-02 | Salman |
+| #29 | Changing the active-application limits or the shortlist threshold in Settings has no effect until the Portal restarts | configuration | Major | ADM-01, APP-02, APP-07 | Salman |
 
 The severities are our own. The instructor confirms them when scoring R5.

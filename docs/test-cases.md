@@ -65,6 +65,7 @@ on the same laptop.
 | Test case ID | Requirement | Module | Level | Technique | Preconditions | Steps | Test data | Expected result | Actual result | Status | Automated test | Issue |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | TC-ADM-001 | ADM-01, APP-02 | Settings | System | Code review (static fields in `SettingsService`), then a state test on the running system | Fresh start; `student.ahmed` (GOOD) has 1 active application | Coordinator sets "Active applications, good standing" = 1 without restarting; the student applies to another open posting | Customer Experience Intern (Gulf Bank), valid letter | application refused: 1 active is the new limit | submitted on 24/11/2026: the student holds 2 active applications with the limit at 1; the limits are read once at start-up | Fail | manual | #29 |
+| TC-ADM-002 | ADM-01, APP-07 | Settings | System | Code review (static field `shortlistThreshold` in `SettingsService`, first predicted in TC-APP-030), then a state test on the running system | Fresh start; `recruiter.gulfbank` has opened a SUBMITTED application with match score 70 | Coordinator sets "Shortlist threshold (match score)" from 60 to 80 without restarting; the recruiter shortlists the application with no justification | Customer Experience Intern · Omar Al-Sulaiti, score 70 | shortlist refused: 70 is below the new threshold 80 and no justification was given | "Application shortlisted." on 26/11/2026, with no override in the audit log; the form still says "required when the score is below 60" | Fail | manual | #29 |
 
 ## Requirement to test traceability matrix
 
@@ -81,7 +82,7 @@ on the same laptop.
 | NOT-01, NOT-02 | TC-OFF-015, TC-OFF-025 to TC-OFF-028 | `OfferRulesTest`, `OfferAgreementTest` | #8 | Yes, for offer events |
 | REL-02 | TC-OFF-010, TC-OFF-011 | `AllowanceApiTest` | #14 | Yes, for `/allowance` |
 | NOT-04 | TC-OFF-018 | `OfferRulesTest` | #17, #19 | Yes |
-| ADM-01, MAINT-02 | TC-OFF-019, TC-ADM-001 | `OfferRulesTest`, manual | #15, #29 | Partly (monthly cap and active-application limits) |
+| ADM-01, MAINT-02 | TC-OFF-019, TC-ADM-001, TC-ADM-002 | `OfferRulesTest`, manual | #15, #29 | Partly (monthly cap, active-application limits and shortlist threshold) |
 | PERF-01 | TC-PERF-003 | `portal-perf01.js` | #24 | Yes |
 | PERF-02 | TC-PERF-001, TC-PERF-002 | `engine-perf02.js` | #21, #24 | Yes |
 | PERF-03 | TC-PERF-005 | `portal-perf03.js` | | Yes |
