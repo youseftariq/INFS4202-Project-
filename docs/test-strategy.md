@@ -197,3 +197,10 @@ Everyone also explores the secondary modules, files every defect they find, and 
 | Date | What changed | Why |
 | --- | --- | --- |
 | 21/11/2026 | First draft (v0.1) | Preparation for M1 |
+| 22/11/2026 | Added a reproduction level: scripts in `tests/repro/` that drive the running system with curl (first: `off-04-last-seat-race.sh`) | A race between two students accepting the last seat cannot be produced by hand in a browser (#6) |
+| 22/11/2026 | Defect workflow: a defect may be filed with a failing automated test as its evidence when the running system cannot show it | #15 is hidden on the system by #12 (the Engine ignores the cap anyway); #11 needed a 72-hour wait. #11 was later reproduced on the system (24/11) |
+| 22/11/2026 | Offers & Allowance white-box: a data-flow review of `EngineRequestMapper.toAllowanceRequest` instead of "a review of rounding and month counting" | The mapper does no rounding or month counting (the Engine does); the data-flow review found that `monthlyCap` is never sent (#15) |
+| 23/11/2026 | Performance: PERF-02 is measured with 1 user by default and 10 users as an option (`-e VUS=10`) | PERF-02 names no load (reported as #24); 1 user is the most generous reading, and `/rank` fails even then (#21) |
+| 24/11/2026 | Settings (ADM-01) tested as a secondary module with its own test cases (TC-ADM-001, later TC-ADM-002) | A code review of `SettingsService` found that the active-application limits are cached until a restart (#29) |
+| 26/11/2026 | Defect workflow: a new finding with the same root cause as a filed issue widens that issue instead of creating a new one | The shortlist threshold is cached in the same way as the limits (predicted by TC-APP-030); duplicates count once, so #29 now covers both |
+| 26/11/2026 | Techniques: JaCoCo coverage gaps are used to design new tests | The only uncovered error path in `OfferService` (`tryComputeAllowance`) led to TC-OFF-031, which found #41 |
