@@ -1,25 +1,25 @@
 letter  runs  parsed  inBand  min  max  spread  avg   (AI-09: spread must be <= 10)
-L01     ٥     ٥       ٥       82   92   ١٠      ٨٧٫٦
-L02     ٥     ٥       ٥       85   88   ٣       ٨٧٫٤
-L03     ٥     ٥       ٥       85   92   ٧       ٨٨٫٢
-L04     ٥     ٥       ٥       80   88   ٨       ٨٤٫٦
-L05     ٥     ٥       ٥       78   88   ١٠      ٨٤٫٢
-L06     ٥     ٥       ٥       73   85   ١٢      ٧٩٫٨   <-- AI-09 violated
-L07     ٥     ٥       ١       40   55   ١٥      ٤٧٫٢   <-- AI-09 violated
-L08     ٥     ٥       ٢       45   55   ١٠      ٤٨٫٦
-L09     ٥     ٥       ٢       45   55   ١٠      ٤٨٫٠
-L10     ٥     ٥       ٥       55   58   ٣       ٥٦٫٢
-L11     ٥     ٥       ٥       45   55   ١٠      ٥١٫٠
-L12     ٤     ٤       ٢       35   45   ١٠      ٤٠٫٠
-L13     ٥     ٥       ٥       15   25   ١٠      ١٨٫٠
-L14     ٥     ٥       ٥       15   25   ١٠      ٢٠٫٠
-L15     ٥     ٥       ٥       10   15   ٥       ١٤٫٠
-L16     ٥     ٥       ٥       12   25   ١٣      ١٨٫٤   <-- AI-09 violated
-L17     ٥     ٥       ٥       15   45   ٣٠      ٢٦٫٠   <-- AI-09 violated
-L18     ٥     ٥       ٢       35   55   ٢٠      ٤٥٫٠   <-- AI-09 violated
-L19     ٥     ٥       ٥       55   65   ١٠      ٥٩٫٦
-L20     ٥     ٥       ٣       30   45   ١٥      ٤١٫٤   <-- AI-09 violated
+L01     5     5       5       82   92   10      87.6
+L02     5     5       5       85   88   3       87.4
+L03     5     5       5       85   92   7       88.2
+L04     5     5       5       80   88   8       84.6
+L05     5     5       5       78   88   10      84.2
+L06     5     5       5       73   85   12      79.8   <-- AI-09 violated
+L07     5     5       1       40   55   15      47.2   <-- AI-09 violated
+L08     5     5       2       45   55   10      48.6
+L09     5     5       2       45   55   10      48.0
+L10     5     5       5       55   58   3       56.2
+L11     5     5       5       45   55   10      51.0
+L12     4     4       2       35   45   10      40.0
+L13     5     5       5       15   25   10      18.0
+L14     5     5       5       15   25   10      20.0
+L15     5     5       5       10   15   5       14.0
+L16     5     5       5       12   25   13      18.4   <-- AI-09 violated
+L17     5     5       5       15   45   30      26.0   <-- AI-09 violated
+L18     5     5       2       35   55   20      45.0   <-- AI-09 violated
+L19     5     5       5       55   65   10      59.6
+L20     5     5       3       30   45   15      41.4   <-- AI-09 violated
 
-Runs counted: ٩٩, inside the reference band: ٨٢ (٨٣%). Letters whose spread is above 10: ٦
-Attempts that failed or could not be parsed (all attempts, including retried ones): ٢
-Response time: average ١٩٠٧٢ ms, slowest ٦٢٠٦٩ ms, ٩٧ call(s) over 10 s (the Portal gives up after 10 s, AI-05)
+Runs counted: 99, inside the reference band: 82 (83%). Letters whose spread is above 10: 6
+Attempts that failed or could not be parsed (all attempts, including retried ones): 2
+Response time: average 19072 ms, slowest 62069 ms, 97 call(s) slower than 10 s (AI-05 requires the Portal to stop waiting after 10 s)
