@@ -367,7 +367,9 @@ causes explain most of the 50 defects.
   - k6 thresholds were taken from the PERF requirements before the runs.
 - **The lesson:** AI output is a hypothesis to test, and the test oracle must come from us.
 
-*[Qudama and Yousef: one or two lines each from your own reflection.]*
+- **Yousef:** AI read the code and wrote test code quickly, but it could not know the Engine's internals or how a real model behaves. The evidence came from failing tests and the running system.
+
+*[Qudama: one or two lines from your own reflection.]*
 
 **Testing the system's AI Assistant** (Yousef, `tests/ai-eval`). We ran 20 reference letters, 5 runs each, with the
 Portal's own prompt and temperature, on `nvidia/nemotron-3-ultra-550b-a55b:free`. That gave 99 valid answers.
