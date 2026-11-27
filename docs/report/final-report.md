@@ -1,13 +1,14 @@
 <!--
 TEAM CHECKLIST: delete this block before making the PDF.
+Done: Yousef's AI log rows and reflection (#67, #68); #72 added to the totals (51 issues).
+Still open:
 - Cover page: add full names and student IDs, the final tag date.
-- Yousef: add your rows to docs/ai-usage-log.md (the log has none from you), or confirm you used no AI; add a reflection.
-- Qudama: add a reflection to the AI log (you have 4 rows and no reflection).
+- Qudama: reflection line in "Use of AI" below (your AI log reflection is in #70; merge it first).
+- Merge #69, #70, #71 and #73 (known-failures list); then check that the Q2 CI paragraph still matches.
 - AI findings AI-03, AI-05, AI-06, AI-09, AI-10, AI-11 are not filed yet: file them with steps a grader can repeat, or
   keep them out of the defect totals (they are out of the totals below).
 - "Reproduced" confirmations (strategy, defect workflow step 3): do them for the Critical and Major issues, or keep the
   sentence in Q2 that says they were not done.
-- Qudama: known-failures list (strategy, change log 26/11).
 - Check every number against GitHub and main on the day; then make the PDF (at most 15 pages + appendices),
   save it as docs/final-report.pdf, merge, add the instructor as collaborator, tag `final`.
 -->
@@ -28,7 +29,7 @@ TEAM CHECKLIST: delete this block before making the PDF.
 **In numbers:**
 - 103 designed test cases.
 - 92 team tests in the Portal suite, 77 Engine API tests, 3 k6 load scripts and an AI evaluation of 99 runs.
-- **50 defects** reported in GitHub Issues: 9 Critical, 30 Major, 11 Minor, none closed as duplicate or invalid.
+- **51 defects** reported in GitHub Issues: 9 Critical, 31 Major, 11 Minor, none closed as duplicate or invalid.
 
 ---
 
@@ -179,12 +180,12 @@ fallback) and Playwright (not needed).
 | Module | Cases | Black-box | White-box | Functional | Non-functional | Pass | Fail | Not run / blocked |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Offers & Allowance (OFF) | 31 | 25 | 6 | 26 | 5 | 17 | 14 | 0 |
-| Applications (APP) | 30 | 26 | 4 | 25 | 5 | 4 | 19 | 7 |
+| Applications (APP) | 30 | 26 | 4 | 25 | 5 | 4 | 20 | 6 |
 | Users & Access / Security (SEC) | 21 | 11 | 10 | 11 | 10 | 10 | 9 | 2 |
 | Interviews (INT) | 12 | 12 | 0 | 10 | 2 | 6 | 5 | 1 |
 | Performance (PERF) | 7 | 7 | 0 | 0 | 7 | 4 | 2 | 1 |
 | Settings (ADM) | 2 | 0 | 2 | 2 | 0 | 0 | 2 | 0 |
-| **Total** | **103** | **81** | **22** | **74** | **29** | **41** | **51** | **11** |
+| **Total** | **103** | **81** | **22** | **74** | **29** | **41** | **52** | **10** |
 
 The AI Assistant is tested by the evaluation below. Its checks are not yet rows in the matrix.
 
@@ -212,18 +213,18 @@ Coverage told us where nobody had looked, not how well a line was tested.
 
 ## Q4. What did we find?
 
-50 issues, all open, none closed as duplicate or invalid.
+51 issues, all open, none closed as duplicate or invalid.
 
 | Severity | Count | Points if valid |
 | --- | --- | --- |
 | Critical | 9 | 27 |
-| Major | 30 | 60 |
+| Major | 31 | 62 |
 | Minor | 11 | 11 |
-| **Total** | **50** | **98** |
+| **Total** | **51** | **100** |
 
 | Category | Count | Category | Count |
 | --- | --- | --- | --- |
-| functional | 19 | security | 6 |
+| functional | 20 | security | 6 |
 | integration | 8 | requirements | 3 |
 | state | 8 | configuration | 2 |
 | performance | 2 | ui, tests | 1 each |
@@ -241,7 +242,7 @@ Coverage told us where nobody had looked, not how well a line was tested.
 
 **By member:**
 - **Salman:** 20 (2 Critical, 11 Major, 7 Minor).
-- **Qudama:** 18 (3, 13, 2).
+- **Qudama:** 19 (3, 14, 2).
 - **Yousef:** 12 (4, 6, 2).
 
 **Not in the totals:** six AI Assistant findings, which are not yet filed (see "Use of AI").
@@ -298,11 +299,12 @@ Coverage told us where nobody had looked, not how well a line was tested.
 | #58 | Schedule: back-to-back interviews of the same recruiter are refused as overlapping | functional | Major | INT-03, INT-05 | Yousef |
 | #59 | Schedule: the Portal sends interview times without a time zone; the Engine reads them 3 hours late | integration | Major | INT-02, INT-05 | Yousef |
 | #60 | Engine `/schedule/validate`: an interview that ends after 18:00 is accepted | functional | Major | INT-02, INT-05 | Yousef |
+| #72 | A refused application shows a generic message and clears the letter | functional | Major | USA-01, USA-06 | Qudama |
 
 ## Q5. Why do these defects exist, and what should change?
 
 Each member grouped their defects by cause; the groups are in Appendix A. Across the three modules, three root
-causes explain most of the 50 defects.
+causes explain most of the 51 defects.
 
 **T1. A rule is defined once but re-implemented, or skipped, in each method.**
 - **Defects:** #7, #8, #9, #17, #38, #49, #50, #53 (state rules); #20, #26, #27 (access checks written by hand per
@@ -354,7 +356,7 @@ causes explain most of the 50 defects.
 
 ## Use of AI
 
-**As a tool in our work** (`docs/ai-usage-log.md`, 20 rows so far, each with what was kept, changed and rejected):
+**As a tool in our work** (`docs/ai-usage-log.md`, 24 rows, each with what was kept, changed and rejected):
 - **Where it helped:** reading code fast against the Requirements (all six of Salman's offer leads became real defects),
   writing repetitive test code (Engine start-up, controllable clocks, WireMock, k6 logins) and drafting report text.
 - **Where it was wrong:**
@@ -390,7 +392,7 @@ We did not run the optional prompt-improvement experiment.
 *[Team draft. Edit together.]*
 
 **What worked:**
-- **Planning by risk.** The six risks in the Q2 table led directly to 20 of the 50 defects, including 8 of the 9 Critical ones.
+- **Planning by risk.** The six risks in the Q2 table led directly to 20 of the 51 defects, including 8 of the 9 Critical ones.
 - **Failing tests as evidence.** A failing test with the issue number in its name made each defect easy to check and to
   demonstrate. Small scripts made "impossible by hand" defects, like the race, repeatable.
 - **Reviews.** They caught a duplicate (#29), a wrong expected value (TC-APP-009) and numbers that didn't match (#21).
