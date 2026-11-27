@@ -1,10 +1,11 @@
 <!--
 TEAM CHECKLIST: delete this block before making the PDF.
-Done: Yousef's AI log rows and reflection (#67, #68); #72 added to the totals (51 issues); names and student IDs on the cover.
+Done: Yousef's AI log rows and reflection (#67, #68, #69); Qudama's reflection (#70); the known-failures list (#73);
+#72 in the totals (51 issues); names and student IDs on the cover; the three test-only exceptions in Q4.
 Still open:
 - Cover page: add the team name and the final tag date.
-- Qudama: reflection line in "Use of AI" below (your AI log reflection is in #70; merge it first).
-- Merge #69, #70, #71 and #73 (known-failures list); then check that the Q2 CI paragraph still matches.
+- Qudama: re-run #48, #49, #50, #51 and #53 yourself and update your reflection. It says Claude carried out those
+  reproductions, while the cover declares every defect was "reproduced by us".
 - AI findings AI-03, AI-05, AI-06, AI-09, AI-10, AI-11 are not filed yet: file them with steps a grader can repeat, or
   keep them out of the defect totals (they are out of the totals below).
 - "Reproduced" confirmations (strategy, defect workflow step 3): do them for the Critical and Major issues, or keep the
@@ -144,7 +145,8 @@ fallback) and Playwright (not needed).
   widened #29 instead of letting a duplicate be filed.
 - **CI.** The *Tests* workflow runs the Portal suite on every push. It is red on purpose: on `main`, 239 tests run and
   35 fail, each one exposing a filed defect. So we changed "no new failures" to "no failing test that is not on the
-  known-failures list".
+  known-failures list". The list (`docs/test-strategy.md`, *Known failures on `main`*) maps each of the 35 failing runs
+  to its test case and issue, so a red run can be checked against it.
 - **Conventions:**
   - The issue template is `.github/ISSUE_TEMPLATE/defect.md`, and the labels come from `labels.json`.
   - Test case IDs are `TC-<MODULE>-<NNN>`, and every automated test names its test case and requirement in
@@ -246,6 +248,14 @@ Coverage told us where nobody had looked, not how well a line was tested.
 - **Yousef:** 12 (4, 6, 2).
 
 **Not in the totals:** six AI Assistant findings, which are not yet filed (see "Use of AI").
+
+**Shown only by a failing test:** every other defect was reproduced on the running system after `--reset`, except these
+three:
+- **#15:** the Engine ignores the cap anyway (#12), so the screen looks the same.
+- **#52:** no seeded application has a match score of exactly 60.
+- **#54:** the ranking page shows it together with #36.
+
+Each of these issues names the test that captures what the Portal does.
 
 | Issue | Title | Category | Severity | Requirement | Discovered by |
 | --- | --- | --- | --- | --- | --- |
@@ -356,7 +366,7 @@ causes explain most of the 51 defects.
 
 ## Use of AI
 
-**As a tool in our work** (`docs/ai-usage-log.md`, 24 rows, each with what was kept, changed and rejected):
+**As a tool in our work** (`docs/ai-usage-log.md`, 25 rows, each with what was kept, changed and rejected):
 - **Where it helped:** reading code fast against the Requirements (all six of Salman's offer leads became real defects),
   writing repetitive test code (Engine start-up, controllable clocks, WireMock, k6 logins) and drafting report text.
 - **Where it was wrong:**
@@ -371,7 +381,9 @@ causes explain most of the 51 defects.
 
 - **Yousef:** AI read the code and wrote test code quickly, but it could not know the Engine's internals or how a real model behaves. The evidence came from failing tests and the running system.
 
-*[Qudama: one or two lines from your own reflection.]*
+- **Qudama:** AI reads code and writes test code much faster than I can, but a prediction only counts once a test or
+  the running system shows it. Coverage alone was not enough: the vendor tests already ran most of the Applications code
+  and still missed 11 defects.
 
 **Testing the system's AI Assistant** (Yousef, `tests/ai-eval`). We ran 20 reference letters, 5 runs each, with the
 Portal's own prompt and temperature, on `nvidia/nemotron-3-ultra-550b-a55b:free`. That gave 99 valid answers.
