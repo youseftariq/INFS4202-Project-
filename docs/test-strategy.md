@@ -141,12 +141,70 @@ Everyone also explores the secondary modules, files every defect they find, and 
 - `main` always builds. Nobody pushes directly to `main`.
 - Work happens on a branch named `<member>/<topic>`, for example `salman/off-allowance-tests`. Each branch is merged through
   a pull request that one teammate reviews. The *Tests* workflow runs on every push and pull request. The vendor suite
-  may already fail on `main`; the rule is **no new failures**.
+  may already fail on `main`; the rule is **no new failures**, checked against
+  [Known failures on `main`](#known-failures-on-main).
 - **Commit messages:** imperative, with the test case or issue they relate to, for example
   `Add BVA tests for allowance cap (TC-OFF-004)` or `Add regression test for #12`.
 - **Test case IDs:** `TC-<MODULE>-<NNN>`, where MODULE is OFF, APP, SEC, INT and so on. Every automated test names its test case and requirement
   in `@DisplayName`, for example `@DisplayName("TC-OFF-004 / OFF-05: monthly total is capped at 5,000")`.
 - **Tag `final`** on `main` before the M3 deadline.
+
+### Known failures on `main`
+
+Every test below fails on purpose: it states the requirement and fails because of the filed defect in the last column.
+A failing test that is **not** in this list is a new failure and blocks the merge. Qudama (CI owner) keeps the list.
+
+**How to check a pull request:** open the *Tests* run, look at the `[ERROR]` lines of the *Results* section, and compare
+them with this list. When a defect is fixed, its rows are removed in the same pull request; when a new test exposes a
+filed defect, its row is added in the pull request that adds the test.
+
+Baseline: *Tests* run on `main` after the merge of #65 (27/11/2026): 239 tests, 32 failures, 3 errors, 35 failing runs, all
+listed below. Classes are under `com.halcyon.uniplace`.
+
+| Test class | Test method | Test case | Issue |
+| --- | --- | --- | --- |
+| `web.AccessControlTest` | `companyNameIsEscapedOnThePostingsList` | TC-SEC-005 | #5 |
+| `web.AccessControlTest` | `recruiterCannotOpenReports` | TC-SEC-006 | #20 |
+| `web.AccessControlTest` | `studentCannotOpenReports` | TC-SEC-006 | #20 |
+| `web.AccessControlTest` | `studentCannotOpenAnotherStudentsApplication` | TC-SEC-007 | #26 |
+| `web.AccessControlTest` | `recruiterOfAnotherCompanyCannotOpenApplication` | TC-SEC-008 | #26 |
+| `web.AccessControlTest` | `unrelatedRecruiterCannotDownloadDocument` | TC-SEC-009 | #27 |
+| `web.AccessControlTest` | `settingsFormNeedsACsrfToken` | TC-SEC-010 | #28 |
+| `web.SecurityConfigurationTest` | `stackTraceIsNotIncluded` | TC-SEC-004 | #4 |
+| `web.SecurityConfigurationTest` | `exceptionClassIsNotIncluded` | TC-SEC-004 | #4 |
+| `service.PasswordPolicyTest` | `changeRefusesPasswordWithoutADigit` | TC-SEC-018 | #3 |
+| `service.OfferRulesTest` | `responseDeadlineIsSeventyTwoHoursAfterIssue` | TC-OFF-012 | #10 |
+| `service.OfferRulesTest` | `offerCannotBeAcceptedAfterDeadline` | TC-OFF-013 | #11 |
+| `service.OfferRulesTest` | `acceptingWithdrawsOtherActiveApplications` | TC-OFF-014 | #7 |
+| `service.OfferRulesTest` | `fillingLastSeatRejectsRemainingApplications` | TC-OFF-015 | #8 |
+| `service.OfferRulesTest` | `offerOnlyForApplicationInInterview` | TC-OFF-016 | #9 |
+| `service.OfferRulesTest` | `concurrentAcceptsOfLastSeat` | TC-OFF-017 | #6 |
+| `service.OfferRulesTest` | `reminderIsRecordedOnce` | TC-OFF-018 | #17 |
+| `service.OfferRulesTest` | `monthlyCapSettingIsSentToEngine` | TC-OFF-019 | #15 |
+| `service.OfferRulesTest` | `acceptWhileEngineDownIsRefused` | TC-OFF-031 | #41 |
+| `service.ApplicationRulesTest` | `applicationOnTheDeadlineDayIsAccepted` | TC-APP-003 | #47 |
+| `service.ApplicationRulesTest` | `probationStudentUsesTheProbationLimit` | TC-APP-005 | #48 |
+| `service.ApplicationRulesTest` | `probationStudentAboveTheLimitIsRefused` | TC-APP-005 | #48 |
+| `service.ApplicationRulesTest` | `withdrawnApplicationsAreNotActive` | TC-APP-006 | #49 |
+| `service.ApplicationRulesTest` | `studentCanApplyAgainAfterRejection` | TC-APP-007 | #50 |
+| `service.ApplicationRulesTest` | `eligibilityRequestUsesThePostingAndTheStudent` | TC-APP-010 | #51 |
+| `service.ApplicationRulesTest` | `finalApplicationCannotBeWithdrawn` (3 runs: from ACCEPTED, REJECTED, WITHDRAWN) | TC-APP-014 | #38 |
+| `service.ApplicationRulesTest` | `scoreAtTheThresholdNeedsNoJustification` | TC-APP-015 | #52 |
+| `service.ApplicationRulesTest` | `applicationsOfANonApprovedCompanyAreFrozen` | TC-APP-017 | #53 |
+| `service.ApplicationRulesTest` | `rankingUsesTheSeatsStillFree` | TC-APP-026 | #54 |
+| `engine.ApplicationEngineRulesTest` | `matchScoreDependsOnTheStudentsSkills` | TC-APP-009 | #40 |
+| `engine.ApplicationEngineRulesTest` | `unreachableEngineNeverMeansEligible` | TC-APP-011 | #39 |
+| `engine.ApplicationEngineRulesTest` | `engineErrorNeverMeansEligible` | TC-APP-011 | #39 |
+| `engine.ApplicationEngineRulesTest` | `unreachableEngineGivesNoMatchScore` | TC-APP-011 | #39 |
+
+Notes:
+- `unrelatedRecruiterCannotDownloadDocument` answers 404, not 200: the handler lets the recruiter through and then
+  does not find the file on disk in the test. It fails for the reason in #27; after the fix it must answer 403.
+- `applicationOnTheDeadlineDayIsAccepted` fails with a `BusinessRuleException` (an error, not a failure) because the
+  Portal refuses the application on the deadline day (#47). `scoreAtTheThresholdNeedsNoJustification` (#52) and
+  `studentCanApplyAgainAfterRejection` (#50) are errors for the same kind of reason.
+- The Engine API suite in `tests/api` (for example `ApplicationsApiTest`) runs locally, not in the *Tests* workflow, so it
+  is not part of this list.
 
 ### Defect workflow
 
@@ -206,3 +264,4 @@ Everyone also explores the secondary modules, files every defect they find, and 
 | 26/11/2026 | Defect workflow: a new finding with the same root cause as a filed issue widens that issue instead of creating a new one | The shortlist threshold is cached in the same way as the limits (predicted by TC-APP-030); duplicates count once, so #29 now covers both |
 | 26/11/2026 | Techniques: JaCoCo coverage gaps are used to design new tests | The only uncovered error path in `OfferService` (`tryComputeAllowance`) led to TC-OFF-031, which found #41 |
 | 26/11/2026 | Git workflow: "no new failures" now means no failing test that is not on a known-failures list. Every test that fails on `main` on purpose, because it exposes a filed defect, is listed in this strategy with its issue number; Qudama (CI owner) keeps the list | Tests that expose defects must fail, so the *Tests* workflow is red on every run and a newly broken test cannot be seen. Proposed by Qudama in the review of #42 and agreed by Salman |
+| 27/11/2026 | Git workflow: the known-failures list (agreed 26/11) is added under *Known failures on `main`*, with 35 failing test runs, each mapped to its test case and issue | Makes the "no new failures" rule checkable: a red *Tests* run is fine only if every failing test is on the list |

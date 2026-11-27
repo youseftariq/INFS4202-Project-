@@ -30,13 +30,14 @@ One entry per meaningful use.
 | 26/11 | Salman | Claude Code (Claude Opus 5.5) | Draft report sections Q1 and Q2 for the team | Draft Q1 (system model, flows, Portal–Engine seam, what we inferred about the Engine) and Q2 (risks, levels, roles, Git workflow, changes) from the strategy, the code, the GitHub history and all 50 issues | `docs/report/q1-understanding.md`, `docs/report/q2-process.md` | Claims checked against the source, the contract and GitHub: slot request fields taken from `openapi.yaml`, the SEC test-case count corrected to 19, and the PRs merged without review stated as they are | none |
 | 26/11 | Qudama | Claude Code (Claude Opus 5.5) | Draft Q3, Q4 and Q5 for the Applications module | Count my test cases by technique, box, type and level; list my 18 issues; group them by root cause using the vendor's own tests to explain why each got past | `docs/report/q3-tests-qudama.md`, `q4-defects-qudama.md`, `q5-root-causes-qudama.md`; coverage before and after our tests from the CI JaCoCo reports of the #45 and #46 merges | Checked every issue title against GitHub and every code fact (quoted comment, comparisons, `ApplicationState.ACTIVE`) against the source | Removed a claim that the seed data never has an empty nice-to-have list: three seeded postings do |
 | 27/11 | Salman | Claude Code (Claude Opus 5.5) | Assemble the final report | Combine the nine module sections and Q1/Q2 into one report within 15 pages: team tables for Q3 and Q4, three cross-module root causes for Q5, Use of AI, lessons learned | `docs/report/final-report.md` | Every total re-counted from GitHub and CI; three wrong figures corrected before review (security tests 45, risk-to-defect counts, duplicated issue references) | none |
+| 27/11 | Qudama | Claude Code (Claude Opus 5.5) | File the TC-APP-029 defect and write the CI known-failures list | Reproduce TC-APP-029 on the running system; map every failing test of the latest `main` *Tests* run to its test case and issue | Issue #72; the *Known failures on `main`* section of the test strategy (35 failing runs, each with its issue) | Checked every test against its `@DisplayName` and the issue column of `test-cases.md`; changed TC-APP-029 to a duplicate re-apply because the 50-character letter in the original steps cannot be sent (`letter.js` disables the button) | The first count missed two runs: `finalApplicationCannotBeWithdrawn` is parameterised and fails three times |
 
 ## Reflection
 
 ### Yousef (Users & Access / Security, Interviews, AI Assistant)
 
 **Where AI helped.**
-- **Reading code against the requirements.** It found where the rules were missing: the Coordinator address list in `SecurityConfig` that leaves out `/coordinator/reports`, `ApplicationController.view` that never calls the access guard, `th:utext` in the postings list, and the CSRF exclusion for the settings form.
+- **Explaining root causes.** It helped explain the root causes of defects I had already found, by reading the code against the requirements: the Coordinator address list in `SecurityConfig` that leaves out `/coordinator/reports`, `ApplicationController.view` that never calls the access guard, `th:utext` in the postings list, and the CSRF exclusion for the settings form.
 - **Test code.** It wrote the six security test classes (45 test runs, 10 fail on purpose), `ScheduleApiTest` and the evaluation script, around cases I had designed.
 
 **Where AI was wrong.**
@@ -90,3 +91,29 @@ One entry per meaningful use.
   Engine's internals or what a tool really measured. Its predictions are hypotheses to test, not findings.
 - **The test oracle has to be mine.** Next time I would write the expected results myself before asking for the test
   code, every time.
+
+### Qudama (Applications)
+
+**Where AI helped.**
+- **Reading code against the requirements.** Claude read `ApplicationService`, `EngineRequestMapper`, `MatchScoreService` and `RankingService` against APP-01 to APP-10 and wrote its predictions into the "Not run" rows of my test cases. Salman checked them against the source, and every one became a real defect when it was run (#38 to #40, #47 to #54).
+- **Probing the Engine.** It sent boundary requests to `/eligibility`, `/match` and `/rank` and compared the answers with the OpenAPI rules, which found #32 to #37.
+- **Test code.** It wrote `ApplicationRulesTest`, `ApplicationEngineRulesTest` and `ApplicationsApiTest` around my test cases (27 Portal tests and 34 API cases). The Portal tests compiled on the first CI run.
+- **Measurements.** It took coverage before and after our tests from the CI JaCoCo reports, and showed that `/rank` time depends on the data (1.7 s to 13 s for 200 candidates), which explained why my numbers and #21 did not match.
+- **Learning Git.** I had not used GitHub before. It walked me through branches, commits, pull requests and resolving the merge conflict on #46.
+
+**Where AI was wrong.**
+- **A duplicate in the making.** Its first plan for #40 relied on an Engine outage, which would have made it a copy of #39. I re-ran it with the Engine running: two students, two different skill sets, the same score.
+- **Overstating what it could do.** It said it could post issues for me, then GitHub refused (403), and I had to paste them myself.
+- **Wording and numbers.** It paraphrased POS-04 in the draft of #47 instead of quoting it; it labelled one `/rank` data set "all different scores", which is impossible with 200 candidates and scores from 0 to 100; and Q3 first said 16 defects where the 16 failing tests expose 11. All were corrected before publishing.
+- **A false claim in Q5.** It wrote that the seed data never has a posting without nice-to-have skills. Three postings have none, so the sentence was removed.
+- **Editing files.** Its first script rewrote every row of `test-cases.md` and changed the line endings, including my teammates' rows. This was caught by checking the size of the change before committing.
+
+**How I checked it.**
+- **Reproduce before filing.** I reproduced #32 to #40 and #47 myself after `.\start.cmd --reset --jar`, in the browser or with PowerShell requests to the Engine, and attached screenshots. On 27/11 #48, #49, #50, #51 and #53 were also reproduced on the running system, in the browser on my computer with Claude carrying out the steps; #52 and #54 are shown only by failing automated tests, and Q4 states these two exceptions.
+- **The right failure.** Each failing test was checked in the CI log to fail for the predicted reason, and the passing tests are the boundary values that should pass.
+- **Against the sources.** Issue titles were compared with GitHub, requirement quotes with the Requirements document, and code claims with the source files. Engine causes are marked "inferred".
+
+**What I learned.**
+- **Coverage is not enough.** The vendor's tests already ran most of this module's code (`MatchScoreService` had 100% branch coverage) and still missed 11 defects, because they never checked the values at the boundaries.
+- **Predictions are hypotheses.** AI reads code and writes test code much faster than I can, but a prediction only counts once a test or the running system shows it.
+- **Next time.** I would reproduce every defect on the running system before filing it, not after, and work out the expected results myself before asking for the test code.
