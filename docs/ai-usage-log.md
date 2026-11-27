@@ -107,7 +107,7 @@ One entry per meaningful use.
 - **Editing files.** Its first script rewrote every row of `test-cases.md` and changed the line endings, including my teammates' rows. This was caught by checking the size of the change before committing.
 
 **How I checked it.**
-- **Reproduce before filing.** I reproduced #32 to #40 and #47 myself after `.\start.cmd --reset --jar`, in the browser or with PowerShell requests to the Engine, and attached screenshots. #48 to #54 are shown only by failing automated tests so far; Q4 says so instead of claiming otherwise.
+- **Reproduce before filing.** I reproduced #32 to #40 and #47 myself after `.\start.cmd --reset --jar`, in the browser or with PowerShell requests to the Engine, and attached screenshots. On 27/11 #48, #49, #50, #51 and #53 were also reproduced on the running system, in the browser on my computer with Claude carrying out the steps; #52 and #54 are shown only by failing automated tests, and Q4 states these two exceptions.
 - **The right failure.** Each failing test was checked in the CI log to fail for the predicted reason, and the passing tests are the boundary values that should pass.
 - **Against the sources.** Issue titles were compared with GitHub, requirement quotes with the Requirements document, and code claims with the source files. Engine causes are marked "inferred".
 
