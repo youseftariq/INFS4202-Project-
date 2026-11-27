@@ -35,16 +35,19 @@ TC-APP-018), #21 (`/rank` performance, Salman; my TC-APP-028 added the data-depe
   #39 (stopping the Engine during use) and #40 (two students on one posting).
 - **Engine API tests (black-box):** #32 to #37, each first found with direct requests to the running Engine, then
   automated in `ApplicationsApiTest`.
-- **Portal automated tests (`ApplicationRulesTest`):** #47 to #54. #47 was also confirmed on the running system.
+- **Portal automated tests (`ApplicationRulesTest`):** #47 to #54. All except #52 and #54 were then
+  confirmed on the running system.
 - **Review of the vendor test suite:** #55. Two vendor tests assert the wrong values, which hides #48 and #49.
 
 **Reproduction:**
 - **On the running system:** #32 to #40 and #47 (after `.\start.cmd --reset --jar`, in the browser or with PowerShell
-  requests to the Engine).
-- **By a failing automated test only:** #48 to #54. Each issue gives the test to run and the CI message; they are not
-  yet confirmed in the browser. Before the final tag, the ones the running system can show (#49, #50, #53, and #48 and
-  #51 after a Settings or GPA change) will be reproduced on it, or the report will state this exception, as Salman's
-  section does for #15.
+  requests to the Engine), and on 27/11/2026 #48, #49, #50, #51 and #53, in the browser after a fresh `--reset`. The
+  steps and results are in a comment on each of these issues.
+- **By a failing automated test only:** #52 and #54. These are the two exceptions to the cover-page declaration:
+  - **#52** needs an application whose match score is exactly the threshold (60). No seeded student and posting give
+    that score, and Engine defects #32 and #34 change scores, so it is shown by the test, which sets the score directly.
+  - **#54** shows on the ranking page together with Engine defect #36 (one candidate too many within seats), so the
+    screen cannot separate the two. The test captures the request the Portal sends to the Engine.
 - **#55** is a defect in the vendor's tests, shown by reading and running them.
 
 ## Issues
