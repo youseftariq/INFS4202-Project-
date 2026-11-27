@@ -1,8 +1,8 @@
 <!--
 TEAM CHECKLIST: delete this block before making the PDF.
-Done: Yousef's AI log rows and reflection (#67, #68); #72 added to the totals (51 issues).
+Done: Yousef's AI log rows and reflection (#67, #68); #72 added to the totals (51 issues); names and student IDs on the cover.
 Still open:
-- Cover page: add full names and student IDs, the final tag date.
+- Cover page: add the team name and the final tag date.
 - Qudama: reflection line in "Use of AI" below (your AI log reflection is in #70; merge it first).
 - Merge #69, #70, #71 and #73 (known-failures list); then check that the Q2 CI paragraph still matches.
 - AI findings AI-03, AI-05, AI-06, AI-09, AI-10, AI-11 are not filed yet: file them with steps a grader can repeat, or
@@ -20,7 +20,7 @@ Still open:
 | Course | INFS4202 Software Testing & Quality Assurance, Fall 2026 |
 | Project | UniPlace acceptance testing |
 | Team name | *[team name]* |
-| Members | Salman Ghazi, *[student ID]* · Qudama *[full name, student ID]* · Yousef *[full name, student ID]* |
+| Members | Salman Ghazi, 60300519 · Qudama al Dulaimi, 60306911 · Yousef Natsheh, 60307770 |
 | Repository | https://github.com/youseftariq/INFS4202-Project- (private; the instructor is a collaborator) |
 | Final tag and date | `final`, *[dd/MM/yyyy]* |
 | Primary modules | Offers & Allowance (Salman) · Applications (Qudama) · Users & Access / Security (Yousef) |
