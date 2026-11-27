@@ -34,7 +34,7 @@ One entry per meaningful use.
 ### Yousef (Users & Access / Security, Interviews, AI Assistant)
 
 **Where AI helped.**
-- **Reading code against the requirements.** It found where the rules were missing: the Coordinator address list in `SecurityConfig` that leaves out `/coordinator/reports`, `ApplicationController.view` that never calls the access guard, `th:utext` in the postings list, and the CSRF exclusion for the settings form.
+- **Explaining root causes.** It helped explain the root causes of defects I had already found, by reading the code against the requirements: the Coordinator address list in `SecurityConfig` that leaves out `/coordinator/reports`, `ApplicationController.view` that never calls the access guard, `th:utext` in the postings list, and the CSRF exclusion for the settings form.
 - **Test code.** It wrote the six security test classes (45 test runs, 10 fail on purpose), `ScheduleApiTest` and the evaluation script, around cases I had designed.
 
 **Where AI was wrong.**
