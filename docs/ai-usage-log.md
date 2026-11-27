@@ -89,3 +89,29 @@ One entry per meaningful use.
   Engine's internals or what a tool really measured. Its predictions are hypotheses to test, not findings.
 - **The test oracle has to be mine.** Next time I would write the expected results myself before asking for the test
   code, every time.
+
+### Qudama (Applications)
+
+**Where AI helped.**
+- **Reading code against the requirements.** Claude read `ApplicationService`, `EngineRequestMapper`, `MatchScoreService` and `RankingService` against APP-01 to APP-10 and wrote its predictions into the "Not run" rows of my test cases. Salman checked them against the source, and every one became a real defect when it was run (#38 to #40, #47 to #54).
+- **Probing the Engine.** It sent boundary requests to `/eligibility`, `/match` and `/rank` and compared the answers with the OpenAPI rules, which found #32 to #37.
+- **Test code.** It wrote `ApplicationRulesTest`, `ApplicationEngineRulesTest` and `ApplicationsApiTest` around my test cases (27 Portal tests and 34 API cases). The Portal tests compiled on the first CI run.
+- **Measurements.** It took coverage before and after our tests from the CI JaCoCo reports, and showed that `/rank` time depends on the data (1.7 s to 13 s for 200 candidates), which explained why my numbers and #21 did not match.
+- **Learning Git.** I had not used GitHub before. It walked me through branches, commits, pull requests and resolving the merge conflict on #46.
+
+**Where AI was wrong.**
+- **A duplicate in the making.** Its first plan for #40 relied on an Engine outage, which would have made it a copy of #39. I re-ran it with the Engine running: two students, two different skill sets, the same score.
+- **Overstating what it could do.** It said it could post issues for me, then GitHub refused (403), and I had to paste them myself.
+- **Wording and numbers.** It paraphrased POS-04 in the draft of #47 instead of quoting it; it labelled one `/rank` data set "all different scores", which is impossible with 200 candidates and scores from 0 to 100; and Q3 first said 16 defects where the 16 failing tests expose 11. All were corrected before publishing.
+- **A false claim in Q5.** It wrote that the seed data never has a posting without nice-to-have skills. Three postings have none, so the sentence was removed.
+- **Editing files.** Its first script rewrote every row of `test-cases.md` and changed the line endings, including my teammates' rows. This was caught by checking the size of the change before committing.
+
+**How I checked it.**
+- **Reproduce before filing.** I reproduced #32 to #40 and #47 myself after `.\start.cmd --reset --jar`, in the browser or with PowerShell requests to the Engine, and attached screenshots. #48 to #54 are shown only by failing automated tests so far; Q4 says so instead of claiming otherwise.
+- **The right failure.** Each failing test was checked in the CI log to fail for the predicted reason, and the passing tests are the boundary values that should pass.
+- **Against the sources.** Issue titles were compared with GitHub, requirement quotes with the Requirements document, and code claims with the source files. Engine causes are marked "inferred".
+
+**What I learned.**
+- **Coverage is not enough.** The vendor's tests already ran most of this module's code (`MatchScoreService` had 100% branch coverage) and still missed 11 defects, because they never checked the values at the boundaries.
+- **Predictions are hypotheses.** AI reads code and writes test code much faster than I can, but a prediction only counts once a test or the running system shows it.
+- **Next time.** I would reproduce every defect on the running system before filing it, not after, and work out the expected results myself before asking for the test code.
