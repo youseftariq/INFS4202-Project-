@@ -5,6 +5,9 @@ One entry per meaningful use.
 | Date | Member | Tool and model | Purpose | Prompt summary | Kept | Modified (how) | Rejected (why) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 2026-11-23 | Yousef | Claude (claude.ai chat) | Write white-box and regression tests (6 JUnit classes) | Asked for tests for LoginAttemptService, UserService, AccessGuard, and for the security defects | Tests that compiled and ran: 45 new, 10 fail on purpose (defect tests) | Fixed the test-case numbering to match my matrix | None |
+| 26/11 | Yousef | Claude (Sonnet 5.5) | Interviews: design TC-INT-001 to 012 and `ScheduleApiTest` for `/schedule/validate` | Asked for test cases and API tests for INT-01 to INT-05 from the Requirements and the OpenAPI text (boundaries, overlap, working days, time zone) | 12 test cases, 13 API tests, four defects (#57 to #60) | Requirement IDs corrected to INT-01 and INT-03 in the tests and the matrix; the new rows were inserted into the current `main` file (PR #61) | An older version of the interview cases, replaced by the corrected one |
+| 24/11 and 26/11 | Yousef | Claude (Sonnet 5.5) | AI Assistant evaluation: `AiEval.java` and 20 reference letters with bands | Asked for a script that sends the Portal's prompt and temperature to a provider, 5 runs per letter, with checks for AI-01, 03, 04, 05, 06 and 09 | The script, `letters.json`, 99 valid answers and the summary | Script, summary and README corrected before the merge (PR #62) | The optional low-temperature experiment, not run |
+| 26/11 | Yousef | Claude (Sonnet 5.5) | Review the Portal's AI code against AI-03 to AI-11 | Asked it to read `PromptBuilder`, `AiClient` and `AiResponseParser` against the requirements | Six findings: personal data in the prompt, internal note, contradictory instructions, no time-out, incomplete validation, score spread | Each finding labelled with how it was found and whether it was reproduced | The expectation that letters with instructions would raise the score: the run showed the model ignored them, so it is a risk, not a defect |
 | 21/11 | Salman | Claude Code (Claude Opus 5.5) | Draft the M1 test strategy | Read the project documents and the Portal source; propose risks, primary modules, levels, techniques, tools, roles and Git workflow | Risk analysis, the three primary modules, test levels, techniques, tools and Git workflow as the base of `docs/test-strategy.md` | The team discussed Claude's proposal together and assigned the roles and modules based on each member's skills: Salman, Offers & Allowance + performance; Qudama, Applications + Git/CI; Yousef, Users & Access / Security + AI Assistant | Claude's suggested role assignment, replaced by the team's own decision |
 | 22/11 | Salman | Claude Code (Claude Opus 5.5) | Find likely defects in the offer code | Review `OfferService` and `EngineRequestMapper` against OFF-01..07 and NOT-04 | Leads on deadline, auto-withdraw, state guard, seat locking, reminders, monthly cap | Every lead verified with a failing test and on the running system before it was reported | none |
 | 22/11 | Salman | Claude Code (Claude Opus 5.5) | Engine `/allowance` API tests | Generate a JUnit project that starts the Engine and checks `/allowance` against OFF-05 and the OpenAPI rules (boundaries, cap, penalty, rounding, invalid input) | Test project, Engine start-up helper, 30 tests | Expected values checked by hand against OFF-05 | none |
@@ -25,9 +28,31 @@ One entry per meaningful use.
 | 26/11 | Salman | Claude Code (Claude Opus 5.5) | Test the Engine-down accept path and report it | Use the JaCoCo gap (`tryComputeAllowance`) to design a fault-injection test; reproduce it on the running system with the Engine stopped; draft the issue and the root cause | TC-OFF-031, `OfferRulesTest.acceptWhileEngineDownIsRefused`, issue #41, RC9 in Q5 | Full suite re-run so the Q3 totals and coverage come from a real run (167 tests, `OfferService` 87%) | none |
 | 26/11 | Qudama | Claude Code (Claude Opus 5.5) | Write the automated tests for the Applications module | Turn TC-APP-001 to 026 into JUnit tests (Portal, run in CI) and Engine API tests (tests/api), following the existing IntegrationTest and AllowanceApiTest patterns | `ApplicationRulesTest`, `ApplicationEngineRulesTest`, `ApplicationsApiTest` (27 Portal tests, 34 API cases) | Checked that every failing test fails for the predicted reason (CI log messages) before recording results | Did not mark the 8 new failures as defects until reproduced on the running system |
 | 26/11 | Salman | Claude Code (Claude Opus 5.5) | Draft report sections Q1 and Q2 for the team | Draft Q1 (system model, flows, Portal–Engine seam, what we inferred about the Engine) and Q2 (risks, levels, roles, Git workflow, changes) from the strategy, the code, the GitHub history and all 50 issues | `docs/report/q1-understanding.md`, `docs/report/q2-process.md` | Claims checked against the source, the contract and GitHub: slot request fields taken from `openapi.yaml`, the SEC test-case count corrected to 19, and the PRs merged without review stated as they are | none |
+| 26/11 | Qudama | Claude Code (Claude Opus 5.5) | Draft Q3, Q4 and Q5 for the Applications module | Count my test cases by technique, box, type and level; list my 18 issues; group them by root cause using the vendor's own tests to explain why each got past | `docs/report/q3-tests-qudama.md`, `q4-defects-qudama.md`, `q5-root-causes-qudama.md`; coverage before and after our tests from the CI JaCoCo reports of the #45 and #46 merges | Checked every issue title against GitHub and every code fact (quoted comment, comparisons, `ApplicationState.ACTIVE`) against the source | Removed a claim that the seed data never has an empty nice-to-have list: three seeded postings do |
 | 27/11 | Salman | Claude Code (Claude Opus 5.5) | Assemble the final report | Combine the nine module sections and Q1/Q2 into one report within 15 pages: team tables for Q3 and Q4, three cross-module root causes for Q5, Use of AI, lessons learned | `docs/report/final-report.md` | Every total re-counted from GitHub and CI; three wrong figures corrected before review (security tests 45, risk-to-defect counts, duplicated issue references) | none |
 
 ## Reflection
+
+### Yousef (Users & Access / Security, Interviews, AI Assistant)
+
+**Where AI helped.**
+- **Reading code against the requirements.** It found where the rules were missing: the Coordinator address list in `SecurityConfig` that leaves out `/coordinator/reports`, `ApplicationController.view` that never calls the access guard, `th:utext` in the postings list, and the CSRF exclusion for the settings form.
+- **Test code.** It wrote the six security test classes (45 test runs, 10 fail on purpose), `ScheduleApiTest` and the evaluation script, around cases I had designed.
+
+**Where AI was wrong.**
+- **Requirement IDs.** The first `ScheduleApiTest` used the wrong IDs for the overlap and the working-day rules (INT-01 and INT-03). I corrected them in PR #61.
+- **Engine causes.** It wrote causes for the Engine defects that nobody can know, because the Engine is a black box. They are now marked "inferred".
+- **A predicted risk that did not happen.** From the code it expected that instructions inside a letter (AI-04) could raise the score. The 99-answer run showed that the model ignored them, so it is reported as a risk, not as a defect.
+
+**How I checked it.**
+- **Reproduce before filing.** The security issues were reproduced by clicking the steps after `--reset`, and each has a failing test.
+- **Counts.** Counts were recomputed with a script and the files on GitHub were compared with the local copies after each commit.
+- **Source.** Claims about the code were checked in the source files. Anything not run is labelled "not reproduced" or "not yet filed".
+
+**What I learned.**
+- **Strong and weak.** AI is strong at reading a lot of code and writing repetitive test code around a design I already have. It is weak at what it cannot see: the Engine's internals, and how a real model behaves.
+- **Hypotheses.** Its output is a hypothesis. The evidence comes from a failing test or the running system.
+- **Testing an AI feature.** It needs repeated runs and reference bands, not one expected value.
 
 ### Salman (Offers & Allowance, Settings, Performance)
 
